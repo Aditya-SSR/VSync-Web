@@ -43,7 +43,11 @@ export default function PrivacyPolicy() {
           </p>
         </section>
 
-        <section className="plate" role="note" aria-label="Data handling summary">
+        <section
+          className="plate"
+          role="note"
+          aria-label="Data handling summary"
+        >
           <p className="plate-head">nothing leaves your device</p>
           <ul className="plate-list">
             <li>no analytics</li>
@@ -56,22 +60,65 @@ export default function PrivacyPolicy() {
         <nav className="contents" aria-label="Contents">
           <p className="label">contents</p>
           <ol>
-            <li><a href="#s01"><span className="toc-no">01</span> information we collect</a></li>
-            <li><a href="#s02"><span className="toc-no">02</span> data usage</a></li>
-            <li><a href="#s03"><span className="toc-no">03</span> data storage &amp; security</a></li>
-            <li><a href="#s04"><span className="toc-no">04</span> sharing of information</a></li>
-            <li><a href="#s05"><span className="toc-no">05</span> user responsibility</a></li>
-            <li><a href="#s06"><span className="toc-no">06</span> data retention</a></li>
-            <li><a href="#s07"><span className="toc-no">07</span> legal disclaimer on data scraping</a></li>
-            <li><a href="#s08"><span className="toc-no">08</span> changes to this policy</a></li>
-            <li><a href="#s09"><span className="toc-no">09</span> governing law</a></li>
-            <li><a href="#s10"><span className="toc-no">10</span> contact information</a></li>
+            <li>
+              <a href="#s01">
+                <span className="toc-no">01</span> information we collect
+              </a>
+            </li>
+            <li>
+              <a href="#s02">
+                <span className="toc-no">02</span> data usage
+              </a>
+            </li>
+            <li>
+              <a href="#s03">
+                <span className="toc-no">03</span> data storage &amp; security
+              </a>
+            </li>
+            <li>
+              <a href="#s04">
+                <span className="toc-no">04</span> sharing of information
+              </a>
+            </li>
+            <li>
+              <a href="#s05">
+                <span className="toc-no">05</span> user responsibility
+              </a>
+            </li>
+            <li>
+              <a href="#s06">
+                <span className="toc-no">06</span> data retention
+              </a>
+            </li>
+            <li>
+              <a href="#s07">
+                <span className="toc-no">07</span> legal disclaimer on data
+                scraping
+              </a>
+            </li>
+            <li>
+              <a href="#s08">
+                <span className="toc-no">08</span> changes to this policy
+              </a>
+            </li>
+            <li>
+              <a href="#s09">
+                <span className="toc-no">09</span> governing law
+              </a>
+            </li>
+            <li>
+              <a href="#s10">
+                <span className="toc-no">10</span> contact information
+              </a>
+            </li>
           </ol>
         </nav>
 
         <main>
           <section className="sec" id="s01">
-            <span className="numeral" aria-hidden="true">01</span>
+            <span className="numeral" aria-hidden="true">
+              01
+            </span>
             <p className="label">section 01</p>
             <h2>information we collect</h2>
             <div className="prose">
@@ -106,15 +153,17 @@ export default function PrivacyPolicy() {
           </section>
 
           <section className="sec" id="s02">
-            <span className="numeral" aria-hidden="true">02</span>
+            <span className="numeral" aria-hidden="true">
+              02
+            </span>
             <p className="label">section 02</p>
             <h2>data usage</h2>
             <div className="prose">
               <p>
                 <strong>VTOP data fetching.</strong> The App signs in to the
                 VTOP portal from your device and fetches your academic
-                information — attendance, marks, timetables — to display it
-                back to you. This data is used exclusively for displaying your
+                information — attendance, marks, timetables — to display it back
+                to you. This data is used exclusively for displaying your
                 academic information within the App.
               </p>
               <p>
@@ -127,21 +176,23 @@ export default function PrivacyPolicy() {
           </section>
 
           <section className="sec" id="s03">
-            <span className="numeral" aria-hidden="true">03</span>
+            <span className="numeral" aria-hidden="true">
+              03
+            </span>
             <p className="label">section 03</p>
             <h2>data storage &amp; security</h2>
             <div className="prose">
               <p>
-                <strong>Local storage.</strong> All academic data fetched by
-                the App is stored locally on your device. The App does not
-                store or collect this data on any external server.
+                <strong>Local storage.</strong> All academic data fetched by the
+                App is stored locally on your device. The App does not store or
+                collect this data on any external server.
               </p>
               <p>
-                <strong>Encryption.</strong> Your VTOP credentials are
-                encrypted using AES. The AES secret key is further encrypted
-                with RSA and stored in the Android KeyStore, so your
-                credentials remain protected even if the App&rsquo;s local
-                storage is accessed by another app on a rooted device.
+                <strong>Encryption.</strong> Your VTOP credentials are encrypted
+                using AES. The AES secret key is further encrypted with RSA and
+                stored in the Android KeyStore, so your credentials remain
+                protected even if the App&rsquo;s local storage is accessed by
+                another app on a rooted device.
               </p>
               <p>
                 <strong>No external storage.</strong> There is no server-side
@@ -151,7 +202,9 @@ export default function PrivacyPolicy() {
           </section>
 
           <section className="sec" id="s04">
-            <span className="numeral" aria-hidden="true">04</span>
+            <span className="numeral" aria-hidden="true">
+              04
+            </span>
             <p className="label">section 04</p>
             <h2>sharing of information</h2>
             <div className="prose">
@@ -170,7 +223,9 @@ export default function PrivacyPolicy() {
             </div>
           </section>
           <section className="sec" id="s05">
-            <span className="numeral" aria-hidden="true">05</span>
+            <span className="numeral" aria-hidden="true">
+              05
+            </span>
             <p className="label">section 05</p>
             <h2>user responsibility</h2>
             <div className="prose">
@@ -185,7 +240,9 @@ export default function PrivacyPolicy() {
           </section>
 
           <section className="sec" id="s06">
-            <span className="numeral" aria-hidden="true">06</span>
+            <span className="numeral" aria-hidden="true">
+              06
+            </span>
             <p className="label">section 06</p>
             <h2>data retention</h2>
             <div className="prose">
@@ -203,39 +260,45 @@ export default function PrivacyPolicy() {
           </section>
 
           <section className="sec" id="s07">
-            <span className="numeral" aria-hidden="true">07</span>
+            <span className="numeral" aria-hidden="true">
+              07
+            </span>
             <p className="label">section 07</p>
             <h2>legal disclaimer on data scraping</h2>
             <div className="prose">
               <p>
                 The App fetches academic data from the VTOP portal using
-                scraping methods, performed locally on your device. By using
-                the App, you agree to have your data fetched from VTOP for your
+                scraping methods, performed locally on your device. By using the
+                App, you agree to have your data fetched from VTOP for your
                 convenience. The responsibility for using this method lies
                 solely with you, the user. Any issues regarding the legality of
-                VTOP&rsquo;s data usage must be addressed with VIT-AP
-                University administration.
+                VTOP&rsquo;s data usage must be addressed with VIT-AP University
+                administration.
               </p>
             </div>
           </section>
 
           <section className="sec" id="s08">
-            <span className="numeral" aria-hidden="true">08</span>
+            <span className="numeral" aria-hidden="true">
+              08
+            </span>
             <p className="label">section 08</p>
             <h2>changes to this policy</h2>
             <div className="prose">
               <p>
                 We reserve the right to make changes to this Privacy Policy at
                 any time. Any updates will be communicated through in-app
-                notifications or by updating this page. Continued use of the
-                App following any modifications indicates your acceptance of
-                the revised policy.
+                notifications or by updating this page. Continued use of the App
+                following any modifications indicates your acceptance of the
+                revised policy.
               </p>
             </div>
           </section>
 
           <section className="sec" id="s09">
-            <span className="numeral" aria-hidden="true">09</span>
+            <span className="numeral" aria-hidden="true">
+              09
+            </span>
             <p className="label">section 09</p>
             <h2>governing law</h2>
             <div className="prose">
@@ -248,7 +311,9 @@ export default function PrivacyPolicy() {
           </section>
 
           <section className="sec" id="s10">
-            <span className="numeral" aria-hidden="true">10</span>
+            <span className="numeral" aria-hidden="true">
+              10
+            </span>
             <p className="label">section 10</p>
             <h2>contact information</h2>
             <div className="prose">
@@ -259,8 +324,8 @@ export default function PrivacyPolicy() {
               <p>
                 <strong>Developer, VSync</strong>
                 <br />
-                {/* TODO: replace with your real name and email before publishing */}
-                <a href="mailto:privacy@vsync.app">privacy@vsync.app</a>
+
+                <a href="mailto:privacy@vsync.app">minimallabs.dev@gmail.com</a>
               </p>
             </div>
           </section>
@@ -268,7 +333,9 @@ export default function PrivacyPolicy() {
 
         <footer className="footer">
           <span className="label">vsync · privacy policy</span>
-          <span className="label">governed by the laws of the republic of india</span>
+          <span className="label">
+            governed by the laws of the republic of india
+          </span>
         </footer>
       </div>
     </div>
