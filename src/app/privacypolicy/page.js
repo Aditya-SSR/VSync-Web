@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export const metadata = {
   title: "Privacy Policy · VSync",
   description:
@@ -19,6 +21,9 @@ export default function PrivacyPolicy() {
             </span>
             <span className="team">minimal labs</span>
           </span>
+          <Link className="folio-link" href="/terms">
+            terms
+          </Link>
         </header>
 
         <section className="hero">
@@ -325,7 +330,9 @@ export default function PrivacyPolicy() {
                 <strong>Developer, VSync</strong>
                 <br />
 
-                <a href="mailto:privacy@vsync.app">minimallabs.dev@gmail.com</a>
+                <a href="mailto:minimallabs.dev@gmail.com">
+                  minimallabs.dev@gmail.com
+                </a>
               </p>
             </div>
           </section>

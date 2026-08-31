@@ -115,6 +115,19 @@ body {
   gap: 12px;
 }
 
+.folio-link {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  text-decoration: none;
+}
+
+.folio-link:hover {
+  color: var(--color-accent);
+}
+
 .team {
   font-size: clamp(17px, 2.2vw, 22px);
   font-weight: 700;
