@@ -1,0 +1,13 @@
+{
+  "builds": [
+    {
+      "date": "2026-09-01",
+      "page": "privacy-policy",
+      "genre": "editorial",
+      "macrostructure": "02-long-document",
+      "theme": "grid",
+      "knobs": { "accent": "ultramarine oklch(45% 0.19 264)", "paper": "light cool near-white", "display": "grotesk-heavy lowercase" },
+      "enrichment": "none (typography only)"
+    }
+  ]
+}

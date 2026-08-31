@@ -1,0 +1,9 @@
+{
+  "scanned": "2026-09-01",
+  "framework": "Next.js 16.3.3 (app router, Turbopack)",
+  "fontStack": "Archivo 400-800 via next/font/google, variable --font-archivo (src/app/layout.js)",
+  "palette": "OKLCH custom properties in :root (src/app/globals.css) — Grid theme, ultramarine signal ink",
+  "motion": "cut — no framer-motion/gsap/motion detected",
+  "spacing": "Tailwind v4 defaults",
+  "preserve": ["font stack", "palette tokens", "spacing scale"]
+}
