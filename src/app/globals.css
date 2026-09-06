@@ -6,7 +6,9 @@
 @import "tailwindcss";
 
 @theme inline {
-  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+  --font-detail: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-tohue: var(--font-sohne), ui-sans-serif, system-ui, sans-serif;
 }
 
 :root {
@@ -27,8 +29,28 @@ body {
   overflow-x: clip;
 }
 
-html {
-  scroll-behavior: smooth;
+html,
+body {
+  overflow-x: clip;
+}
+
+/* Lenis handles smooth scrolling globally (see src/app/smooth-scroll.jsx);
+   native CSS smooth scrolling would fight it */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
 }
 
 body {
@@ -382,5 +404,38 @@ body {
   * {
     transition-duration: 0.01ms !important;
     animation: none !important;
+  }
+}
+
+/* ---- landing page (home) ---------------------------------------------- */
+/* monochrome, inverted Zajno choreography:                                */
+/* black preloader (white counter) → black overlay sheet wipes away        */
+/* revealing the #ebebeb landing page with black ink                       */
+
+/* hero starts collapsed to its bottom edge, wiped open by GSAP.
+   everything inside (nav / title / cards) is hidden until it opens */
+.home-hero {
+  clip-path: polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%);
+  will-change: clip-path;
+}
+
+/* black sheet sitting on top of the hero content; GSAP collapses it
+   upwards so the revealed page appears to surface from black */
+.home-overlay {
+  clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+  will-change: clip-path;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-counter {
+    display: none;
+  }
+
+  .home-hero {
+    clip-path: polygon(0% 100%, 100% 100%, 100% 0%, 0% 0%);
+  }
+
+  .home-overlay {
+    clip-path: polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%);
   }
 }

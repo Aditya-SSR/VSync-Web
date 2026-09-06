@@ -1,10 +1,25 @@
-import { Archivo } from "next/font/google";
+import { Outfit, Inter } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
+import SmoothScroll from "./smooth-scroll";
 
-const archivo = Archivo({
+const outfit = Outfit({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  variable: "--font-archivo",
+  variable: "--font-outfit",
+  display: "swap",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+// the "tohue" font — Test Sohne, exposed as --font-sohne (mapped to `font-tohue` in globals.css)
+const sohne = localFont({
+  src: "./fonts/testsohne-normal.woff2",
+  weight: "400",
+  variable: "--font-sohne",
   display: "swap",
 });
 
@@ -15,8 +30,13 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={archivo.variable}>
-      <body>{children}</body>
+    <html
+      lang="en"
+      className={`${outfit.variable} ${inter.variable} ${sohne.variable}`}
+    >
+      <body>
+        <SmoothScroll>{children}</SmoothScroll>
+      </body>
     </html>
   );
 }
