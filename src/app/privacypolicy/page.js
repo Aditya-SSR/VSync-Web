@@ -1,4 +1,5 @@
 import Link from "next/link";
+import '../legal.css';
 
 export const metadata = {
   title: "Privacy Policy · VSync",

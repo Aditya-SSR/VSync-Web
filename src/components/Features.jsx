@@ -10,39 +10,29 @@ gsap.registerPlugin(InertiaPlugin, ScrollTrigger);
 const CARDS = [
   {
     number: '01',
-    title: 'mess',
-    caption: 'meal timings + weekly menu',
+    title: 'Mess Menu',
     accent: '#29725f',
-    ink: '#ffffff',
-    points: ['weekly menu', 'meal timings'],
+    text: "Upload your college's Excel menu sheet and browse daily meals right from your phone.",
   },
   {
     number: '02',
-    title: 'attendance',
-    caption: 'the 75% rule, calculated',
+    title: 'Countdowns',
     accent: '#4b69f0',
-    ink: '#ffffff',
-    points: ['subject-wise', 'running total'],
+    text: 'Set countdowns for CATs, quizzes, assignments and other important academic deadlines.',
   },
   {
     number: '03',
-    title: 'timetable',
-    caption: 'export straight to calendar',
+    title: 'Minimal UI',
     accent: '#f5693c',
-    ink: '#ffffff',
-    points: ['daily view', 'room + faculty'],
+    text: 'No clutter, no unnecessary features. Just the academic information you need, presented cleanly.',
   },
   {
     number: '04',
-    title: 'marks',
-    caption: 'every subject, broken down',
+    title: 'Customization',
     accent: '#a0325a',
-    ink: '#ffffff',
-    points: ['internal + final', 'no spreadsheets'],
+    text: 'Personalize your app icon, choose your pages and make VSync feel like your own.',
   },
 ];
-
-const LABEL_COLORS = ['#efbbd8', '#82a0ff', '#f4825c', '#dcec9d'];
 
 /**
  * Throw a card (or label) in the direction the pointer was leaving in, then
@@ -200,40 +190,31 @@ export default function Features() {
             <li
               key={card.number}
               className={`vs-features__card vs-features__card--${i + 1}`}
-              style={{ '--card-bg': card.accent, '--card-ink': card.ink }}
+              style={{ '--card-bg': card.accent }}
             >
               <span className="vs-features__card-num">{card.number}</span>
               <span className="vs-features__card-body">
                 <span className="vs-features__card-title">{card.title}</span>
-                <span className="vs-features__card-points">
-                  {card.points.map((p) => (
-                    <span key={p}>{p}</span>
-                  ))}
-                </span>
+                <span className="vs-features__card-text">{card.text}</span>
               </span>
-              <span className="vs-features__card-cap">{card.caption}</span>
             </li>
           ))}
         </ul>
-
-        <div className="vs-features__labels">
-          {CARDS.map((card, i) => (
-            <span
-              key={card.number}
-              className={`vs-features__label vs-features__label--${i + 1}`}
-              style={{ '--label-bg': LABEL_COLORS[i] }}
-            >
-              {card.caption}
-            </span>
-          ))}
-        </div>
       </div>
 
+      {/* sits in the section's top-right corner, not against the headline —
+          the title is centred and grows with the viewport, so anything hung
+          off it eventually lands on the words */}
+      <span className="vs-features__sticker">
+        <img src="/assets/deco/sticker-phone.svg" alt="" aria-hidden="true" />
+      </span>
+
       <p className="vs-features__desc">
-        Attendance, marks, your timetable and the mess menu — all pulled
-        straight from VTOP on your phone, cached for offline, and laid out so
-        you can read them between two classes. Plus sign-in for your current
-        courses, and nothing else.
+        From attendance and grades to academic calendars, outings, digital
+        assignment uploads, faculty information and the VTOP web view — VSync
+        brings your academic essentials together in one place. No unnecessary
+        layers. Just the tools you need, with the freedom to make them your
+        own.
       </p>
     </section>
   );

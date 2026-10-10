@@ -130,11 +130,11 @@ export default function Hero() {
           />
 
           <div className="vs-hero__cta">
-            {/* TODO: point at the real Play Store listing once it exists. */}
             <a
-              href="#"
+              href="https://play.google.com/store/apps/details?id=com.minimallabs.vsync"
               className="vs-hero__btn"
-              onClick={(e) => e.preventDefault()}
+              target="_blank"
+              rel="noopener noreferrer"
             >
               <span className="vs-hero__btn-glyph" aria-hidden="true">
                 <svg viewBox="0 0 466 512" width="20" height="22">

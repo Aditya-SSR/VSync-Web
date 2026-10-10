@@ -7,11 +7,9 @@ import { gsap } from 'gsap';
 const MENU_LINKS = [
   { label: 'Privacy Policy', href: '/privacypolicy' },
   { label: 'Terms of Use', href: '/terms' },
-  // TODO: MinimalLabs, Lynx and DGK have no real destinations yet — point
-  // them at the actual sites before shipping rather than guessing URLs.
-  { label: 'MinimalLabs', href: '#' },
-  { label: 'Lynx', href: '#' },
-  { label: 'DGK', href: 'https://github.com/dgk1503' },
+  { label: 'MinimalLabs', href: '/minimallabs' },
+  { label: 'Lynx', href: 'https://github.com/Aditya-SSR/', tag: 'developer' },
+  { label: 'DGK', href: 'https://github.com/dgk1503', tag: 'developer' },
 ];
 
 export default function Navbar() {
@@ -27,7 +25,14 @@ export default function Navbar() {
   useEffect(() => {
     const update = () => {
       const panel = document.querySelector('.vs-hero__panel');
-      if (!panel) return;
+
+      // Inner pages have no dark hero to sit over, so the nav pins straight
+      // away and flips to ink.
+      if (!panel) {
+        setStuck(true);
+        setOnLight(true);
+        return;
+      }
 
       const past = panel.getBoundingClientRect().bottom <= 0;
 
@@ -138,12 +143,16 @@ export default function Navbar() {
               <ul className="vs-nav__card-list">
                 {MENU_LINKS.map((item) => {
                   const external = item.href.startsWith('http');
+                  const tag = item.tag ? (
+                    <span className="vs-nav__card-tag">({item.tag})</span>
+                  ) : null;
 
                   return (
                     <li key={item.label} className="vs-nav__card-item">
                       {item.href.startsWith('/') ? (
                         <Link href={item.href} onClick={() => setOpen(null)}>
                           {item.label}
+                          {tag}
                         </Link>
                       ) : (
                         <a
@@ -152,7 +161,10 @@ export default function Navbar() {
                           rel={external ? 'noopener noreferrer' : undefined}
                           onClick={() => setOpen(null)}
                         >
-                          {item.label}
+                          <span className="vs-nav__card-linktext">
+                            {item.label}
+                            {tag}
+                          </span>
                           {external && (
                             <svg
                               viewBox="0 0 24 24"
@@ -229,10 +241,10 @@ export default function Navbar() {
             >
               <img
                 className="vs-nav__qr vs-nav__card-item"
-                src="/assets/deco/wa_qr_code.png"
-                width="200"
-                height="200"
-                alt="Scan to open VSync on the Play Store"
+                src="/assets/deco/play-store-qr.png"
+                width="1000"
+                height="1000"
+                alt="Scan to open VSync on Google Play"
               />
               <h2 className="vs-nav__card-title vs-nav__card-item">
                 get it on play
@@ -242,9 +254,10 @@ export default function Navbar() {
                 from the Play Store.
               </p>
               <a
-                href="#"
+                href="https://play.google.com/store/apps/details?id=com.minimallabs.vsync"
                 className="vs-nav__card-link vs-nav__card-item"
-                onClick={(e) => e.preventDefault()}
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 <span>open the listing</span>
                 <svg viewBox="0 0 169 10" width="100%" height="9" aria-hidden="true">

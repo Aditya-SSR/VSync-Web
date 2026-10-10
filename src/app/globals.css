@@ -135,6 +135,211 @@ button {
   cursor: url('/assets/cursors/cursor-pointer.svg') 12 12, pointer;
 }
 
+
+/* --- Shared: cursor bubble + footer ---------------------------------------
+ * Used by the home page and /minimallabs alike, so they live here rather
+ * than in home.css, which only the home page imports.
+ */
+
+/* ─── Cursor bubble ─────────────────────────────────────────────────────── */
+.cursor-bubble {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9500;
+  padding: 7px 13px;
+  border-radius: 999px;
+  background: var(--vs-pink);
+  color: var(--vs-ink);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform;
+  box-shadow: 0 6px 18px -8px rgba(0, 0, 0, 0.35);
+}
+
+@media (hover: none) {
+  .cursor-bubble {
+    display: none;
+  }
+}
+/* ─── Footer ──────────────────────────────────────────────────────────────
+ * Blue inset panel, columns up top, and a wordmark pinned edge to edge
+ * across the bottom. `textLength` makes the SVG text match the viewBox
+ * exactly, so it always spans the full width without distorting glyphs.
+ */
+.vs-footer {
+  width: calc(100% - 24px);
+  margin: 12px auto;
+}
+
+.vs-footer__inner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: min(64vh, 600px);
+  overflow: hidden;
+  border-radius: var(--vs-radius-panel);
+  background: var(--vs-blue);
+  color: var(--vs-white);
+  padding: clamp(32px, 5vw, 60px) clamp(20px, 3.4vw, 54px) 0;
+}
+
+.vs-footer__top {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 28px 40px;
+}
+
+.vs-footer__col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.vs-footer__badge {
+  display: inline-block;
+  padding: 5px 13px;
+  border-radius: 20px;
+  border-bottom-left-radius: 3px;
+  background: var(--vs-white);
+  color: var(--vs-ink);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.vs-footer__headline {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: clamp(1.4rem, 3vw, 2.4rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  transition: opacity 0.2s ease;
+}
+
+a.vs-footer__headline:hover {
+  opacity: 0.75;
+}
+
+.vs-footer__headline svg {
+  flex-shrink: 0;
+  transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.25, 1.2);
+}
+
+a.vs-footer__headline:hover svg {
+  transform: translate(3px, -3px);
+}
+
+.vs-footer__sub {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  opacity: 0.78;
+}
+
+.vs-footer__sub--mail {
+  text-decoration: underline;
+  text-underline-offset: 5px;
+  text-decoration-thickness: 1px;
+}
+
+.vs-footer__sub--mail:hover {
+  opacity: 1;
+}
+
+.vs-footer__marks {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 20px;
+  margin-top: auto;
+  padding: 26px 0;
+}
+
+.vs-footer__links {
+  display: flex;
+  gap: 20px;
+}
+
+.vs-footer__links a {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  opacity: 0.85;
+  transition: opacity 0.2s ease;
+}
+
+.vs-footer__links a:hover {
+  opacity: 1;
+}
+
+.vs-footer__crew {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.vs-footer__mark {
+  /* pulls the wordmark back out to the panel's own edges, so it spans the
+     full width instead of stopping at the content gutter */
+  margin-left: calc(-1 * clamp(20px, 3.4vw, 54px));
+  margin-right: calc(-1 * clamp(20px, 3.4vw, 54px));
+  margin-top: 2px;
+  color: var(--vs-white);
+  line-height: 0;
+}
+
+.vs-footer__mark svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* 344px measures ~1000 units of natural advance at this tracking, so
+   `textLength` lands on the real width instead of stretching the tracking
+   (at 290px it was 842 units, i.e. 19% letter-spaced apart). */
+.vs-footer__mark text {
+  font-family: 'Epilogue', sans-serif;
+  font-size: 344px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+@media (max-width: 720px) {
+  .vs-footer {
+    width: calc(100% - 16px);
+    margin: 8px auto;
+  }
+
+  .vs-footer__inner {
+    min-height: auto;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .vs-footer__top {
+    flex-direction: column;
+  }
+
+  .vs-footer__marks {
+    margin-top: 36px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

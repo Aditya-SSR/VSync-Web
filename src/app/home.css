@@ -109,32 +109,6 @@
   }
 }
 
-/* ─── Cursor bubble ─────────────────────────────────────────────────────── */
-.cursor-bubble {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 9500;
-  padding: 7px 13px;
-  border-radius: 999px;
-  background: var(--vs-pink);
-  color: var(--vs-ink);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  opacity: 0;
-  pointer-events: none;
-  will-change: transform;
-  box-shadow: 0 6px 18px -8px rgba(0, 0, 0, 0.35);
-}
-
-@media (hover: none) {
-  .cursor-bubble {
-    display: none;
-  }
-}
-
 /* ─── Navbar ──────────────────────────────────────────────────────────────
  * Sits in normal flow over the hero (non-sticky), then pins to the top once
  * the dark panel has scrolled away — `.vs-nav--stuck` from Navbar.jsx.
@@ -355,6 +329,20 @@
   transition: opacity 0.2s ease, transform 0.25s ease;
 }
 
+/* "(developer)" sits beside the name as a muted aside, not part of it */
+.vs-nav__card-tag {
+  margin-left: 7px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+  opacity: 0.5;
+}
+
+.vs-nav__card-linktext {
+  display: inline;
+}
+
 .vs-nav__card--menu a:hover .vs-nav__external {
   opacity: 1;
   transform: translate(1px, -1px);
@@ -394,8 +382,9 @@
 }
 
 .vs-nav__qr {
-  width: 208px;
-  height: 208px;
+  display: block;
+  width: 212px;
+  height: 212px;
   padding: 10px;
   object-fit: contain;
   border-radius: 14px;
@@ -882,7 +871,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-end;
   flex-shrink: 0;
   width: 17vw;
   height: 22vw;
@@ -890,7 +879,7 @@
   border-radius: 0.375rem;
   overflow: clip;
   background: var(--card-bg);
-  color: var(--card-ink);
+  color: var(--vs-white);
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
   text-align: left;
 }
@@ -924,9 +913,10 @@
   z-index: 4;
 }
 
-/* Title + points sit in the vertical middle and the number is pinned to the
-   corner, so the floating pills can drift across a card without ever landing
-   on the type. */
+/* Cards 1–3 are covered on their right by the next card, leaving only a
+   ~65% band of each one actually visible. The copy is capped to that band so
+   a sentence can never run underneath its neighbour. Card 4 is uncapped
+   because nothing sits on top of it. */
 .vs-features__card-num {
   position: absolute;
   top: clamp(12px, 1.1vw, 20px);
@@ -941,88 +931,29 @@
 .vs-features__card-body {
   display: flex;
   flex-direction: column;
+  max-width: 66%;
 }
 
-/* Each card is covered on its right by the next one, so the copy is sized to
-   live inside the left ~60% of the card and stay legible. */
+.vs-features__card--4 .vs-features__card-body {
+  max-width: 100%;
+}
+
 .vs-features__card-title {
-  font-size: clamp(0.95rem, 1.9vw, 1.85rem);
+  font-size: clamp(0.8rem, 1.35vw, 1.35rem);
   font-weight: 900;
-  letter-spacing: -0.045em;
-  line-height: 0.98;
-  text-transform: lowercase;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  text-transform: none;
   overflow-wrap: anywhere;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
-.vs-features__card-points {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+.vs-features__card-text {
   font-family: 'DM Sans', sans-serif;
   font-size: clamp(9px, 0.72vw, 12px);
-  font-weight: 500;
-  line-height: 1.3;
-  opacity: 0.78;
-}
-
-/* the caption lives in the floating pill on desktop, in the card on mobile */
-.vs-features__card-cap {
-  display: none;
-  font-family: 'DM Sans', sans-serif;
-  font-size: clamp(10px, 0.8vw, 13px);
-  font-weight: 500;
-  line-height: 1.3;
-  opacity: 0.85;
-}
-
-.vs-features__labels {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 10;
-  pointer-events: none;
-}
-
-.vs-features__label {
-  position: absolute;
-  z-index: 10;
-  transform: translate(-50%, -50%);
-  padding: 0.1vw 0.5vw;
-  border-radius: 9999px;
-  border-bottom-left-radius: 0;
-  background: var(--label-bg);
-  color: var(--vs-ink);
-  font-family: 'DM Sans', sans-serif;
-  font-size: clamp(10px, 1rem, 16px);
   font-weight: 450;
-  white-space: nowrap;
-  pointer-events: auto;
-}
-
-/* Positions follow the reference's pill placement (31/30, 69/48, 46/89),
-   with a fourth added for the fourth card. The card type now sits in the
-   middle band, so a pill crossing a card never lands on the copy. */
-.vs-features__label--1 {
-  top: 31%;
-  left: 30%;
-}
-
-.vs-features__label--2 {
-  top: 69%;
-  left: 48%;
-}
-
-.vs-features__label--3 {
-  top: 46%;
-  left: 89%;
-}
-
-.vs-features__label--4 {
-  top: 22%;
-  left: 66%;
+  line-height: 1.5;
+  opacity: 0.86;
 }
 
 .vs-features__desc {
@@ -1034,67 +965,91 @@
   line-height: 1.7;
 }
 
-@media (max-width: 900px) {
-  /* The overlapping deck needs real width. Below this it un-fans into a
-     plain grid and the caption moves into the card so nothing is lost. */
+/* Tablet / small laptop — the deck's overlap only has room above ~1349px,
+   so the cards un-fan into a staggered column (the reference drops to a
+   stack at the same breakpoint). */
+@media (max-width: 1348px) {
   .vs-features__stage {
     height: auto;
     margin-bottom: clamp(40px, 6vw, 60px);
   }
 
-  /* the headline runs nearly full-bleed at this width, so the corner sticker
-     has nowhere to sit without landing on it */
-  .vs-features__sticker {
-    display: none;
-  }
-
-  .vs-features__blob,
-  .vs-features__labels {
-    display: none;
-  }
-
   .vs-features__cards {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
     height: auto;
   }
 
   .vs-features__card {
-    width: 100%;
-    height: 178px;
-    padding: 16px 15px;
+    width: min(90%, 420px);
+    height: auto;
+    min-height: 150px;
+    padding: 22px 24px;
     left: auto;
     bottom: auto;
     margin: 0;
-    transform: none;
   }
 
-  .vs-features__card-num {
-    font-size: 11px;
+  .vs-features__card--1 {
+    transform: rotate(-1.6deg);
+    margin-left: -4%;
+  }
+
+  .vs-features__card--2 {
+    transform: rotate(1.4deg);
+    margin-left: 4%;
+  }
+
+  .vs-features__card--3 {
+    transform: rotate(-1.2deg);
+    margin-left: -3%;
+  }
+
+  .vs-features__card--4 {
+    transform: rotate(1deg);
+    margin-left: 3%;
+  }
+
+  .vs-features__card-body {
+    max-width: 100%;
   }
 
   .vs-features__card-title {
-    font-size: clamp(1.05rem, 4.4vw, 1.5rem);
+    font-size: clamp(1.15rem, 3.2vw, 1.6rem);
+    margin-bottom: 8px;
   }
 
-  .vs-features__card-points {
-    display: none;
+  .vs-features__card-text {
+    font-size: clamp(12px, 2.4vw, 14px);
   }
 
-  .vs-features__card-cap {
-    display: block;
-    font-size: 12px;
+  .vs-features__blob {
+    width: 460px;
+    max-width: 130%;
   }
 }
 
-@media (max-width: 460px) {
-  .vs-features__cards {
-    grid-template-columns: minmax(0, 1fr);
+@media (max-width: 860px) {
+  /* the headline runs nearly full-bleed at this width, so the corner
+     sticker has nowhere to sit without landing on it */
+  .vs-features__sticker,
+  .vs-features__blob {
+    display: none;
   }
 
   .vs-features__card {
-    height: 132px;
+    width: min(92%, 380px);
+    min-height: 132px;
+    padding: 18px 20px;
+  }
+
+  .vs-features__card--1,
+  .vs-features__card--2,
+  .vs-features__card--3,
+  .vs-features__card--4 {
+    margin-left: 0;
+    transform: none;
   }
 }
 
@@ -1310,179 +1265,5 @@
 
   .vs-faq__trigger {
     padding: 18px 0;
-  }
-}
-
-/* ─── Footer ──────────────────────────────────────────────────────────────
- * Blue inset panel, columns up top, and a wordmark pinned edge to edge
- * across the bottom. `textLength` makes the SVG text match the viewBox
- * exactly, so it always spans the full width without distorting glyphs.
- */
-.vs-footer {
-  width: calc(100% - 24px);
-  margin: 12px auto;
-}
-
-.vs-footer__inner {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  min-height: min(64vh, 600px);
-  overflow: hidden;
-  border-radius: var(--vs-radius-panel);
-  background: var(--vs-blue);
-  color: var(--vs-white);
-  padding: clamp(32px, 5vw, 60px) clamp(20px, 3.4vw, 54px) 0;
-}
-
-.vs-footer__top {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 28px 40px;
-}
-
-.vs-footer__col {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 10px;
-}
-
-.vs-footer__badge {
-  display: inline-block;
-  padding: 5px 13px;
-  border-radius: 20px;
-  border-bottom-left-radius: 3px;
-  background: var(--vs-white);
-  color: var(--vs-ink);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.vs-footer__headline {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  font-size: clamp(1.4rem, 3vw, 2.4rem);
-  font-weight: 800;
-  letter-spacing: -0.04em;
-  line-height: 1.05;
-  transition: opacity 0.2s ease;
-}
-
-a.vs-footer__headline:hover {
-  opacity: 0.75;
-}
-
-.vs-footer__headline svg {
-  flex-shrink: 0;
-  transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.25, 1.2);
-}
-
-a.vs-footer__headline:hover svg {
-  transform: translate(3px, -3px);
-}
-
-.vs-footer__sub {
-  font-family: 'DM Sans', sans-serif;
-  font-size: 14px;
-  font-weight: 500;
-  opacity: 0.78;
-}
-
-.vs-footer__sub--mail {
-  text-decoration: underline;
-  text-underline-offset: 5px;
-  text-decoration-thickness: 1px;
-}
-
-.vs-footer__sub--mail:hover {
-  opacity: 1;
-}
-
-.vs-footer__marks {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px 20px;
-  margin-top: auto;
-  padding: 26px 0;
-}
-
-.vs-footer__links {
-  display: flex;
-  gap: 20px;
-}
-
-.vs-footer__links a {
-  font-family: 'DM Sans', sans-serif;
-  font-size: 13px;
-  font-weight: 700;
-  opacity: 0.85;
-  transition: opacity 0.2s ease;
-}
-
-.vs-footer__links a:hover {
-  opacity: 1;
-}
-
-.vs-footer__crew {
-  font-family: 'DM Sans', sans-serif;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  opacity: 0.7;
-}
-
-.vs-footer__mark {
-  /* pulls the wordmark back out to the panel's own edges, so it spans the
-     full width instead of stopping at the content gutter */
-  margin-left: calc(-1 * clamp(20px, 3.4vw, 54px));
-  margin-right: calc(-1 * clamp(20px, 3.4vw, 54px));
-  margin-top: 2px;
-  color: var(--vs-white);
-  line-height: 0;
-}
-
-.vs-footer__mark svg {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-/* 344px measures ~1000 units of natural advance at this tracking, so
-   `textLength` lands on the real width instead of stretching the tracking
-   (at 290px it was 842 units, i.e. 19% letter-spaced apart). */
-.vs-footer__mark text {
-  font-family: 'Epilogue', sans-serif;
-  font-size: 344px;
-  font-weight: 900;
-  letter-spacing: -0.02em;
-}
-
-@media (max-width: 720px) {
-  .vs-footer {
-    width: calc(100% - 16px);
-    margin: 8px auto;
-  }
-
-  .vs-footer__inner {
-    min-height: auto;
-    padding-left: 20px;
-    padding-right: 20px;
-  }
-
-  .vs-footer__top {
-    flex-direction: column;
-  }
-
-  .vs-footer__marks {
-    margin-top: 36px;
   }
 }

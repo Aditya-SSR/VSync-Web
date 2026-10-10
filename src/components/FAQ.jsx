@@ -35,7 +35,8 @@ const FAQS = [
 
 export default function FAQ() {
   const rootRef = useRef(null);
-  const [openIndex, setOpenIndex] = useState(0);
+  // -1 = everything collapsed. Nothing is open on first paint.
+  const [openIndex, setOpenIndex] = useState(-1);
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
@@ -48,26 +49,19 @@ export default function FAQ() {
       window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const ctx = gsap.context(() => {
-      const items = gsap.utils.toArray('.vs-faq__item');
-
-      // Open the first panel on mount without animating it. Height is owned
-      // entirely by GSAP from here — React never writes `style.height`, or
-      // the two fight over the same property.
-      const first = root.querySelector('.vs-faq__item .vs-faq__body');
-      if (first) {
-        first.style.height = 'auto';
-        first.style.visibility = 'visible';
-      }
-
       if (reduced) return;
 
-      gsap.from(items, {
+      gsap.from('.vs-faq__item', {
         y: 26,
         opacity: 0,
         duration: 0.7,
         stagger: 0.08,
         ease: 'power3.out',
-        scrollTrigger: { trigger: root, start: 'top 78%', toggleActions: 'play none none reverse' },
+        scrollTrigger: {
+          trigger: root,
+          start: 'top 78%',
+          toggleActions: 'play none none reverse',
+        },
       });
 
       const sticker = root.querySelector('.vs-faq__sticker img');
@@ -87,38 +81,59 @@ export default function FAQ() {
   }, []);
 
   /* ── Accordion ──────────────────────────────────────────────────────────
-   * Height is animated on a wrapper that clips, then released back to
-   * `auto` on open so the copy can reflow when the window resizes.
+   * One open at a time. Height is tweened on a clipping wrapper and released
+   * back to `auto` on open so long answers reflow when the window resizes;
+   * the copy inside lifts and fades on its own, slightly behind the height.
+   * React never writes style.height here — it and GSAP would fight.
    */
   const toggle = (index) => {
-    setOpenIndex((current) => {
-      const next = current === index ? -1 : index;
+    const next = openIndex === index ? -1 : index;
+    setOpenIndex(next);
 
-      const panels = rootRef.current.querySelectorAll('.vs-faq__body');
+    const panels = rootRef.current.querySelectorAll('.vs-faq__body');
 
-      panels.forEach((panel, i) => {
-        const inner = panel.firstElementChild;
-        const isOpening = i === next;
+    panels.forEach((panel, i) => {
+      const inner = panel.firstElementChild;
+      const opening = i === next;
 
-        if (isOpening) {
-          gsap.set(panel, { height: 0, visibility: 'visible' });
-          gsap.to(panel, {
-            height: inner.offsetHeight,
-            duration: 0.5,
-            ease: 'power3.inOut',
-            onComplete: () => gsap.set(panel, { height: 'auto' }),
-          });
-        } else {
-          gsap.to(panel, {
-            height: 0,
-            duration: 0.38,
-            ease: 'power3.inOut',
-            onComplete: () => gsap.set(panel, { visibility: 'hidden' }),
-          });
-        }
-      });
+      gsap.killTweensOf(panel);
+      gsap.killTweensOf(inner.children);
 
-      return next;
+      if (opening) {
+        gsap.set(panel, { height: 0, visibility: 'visible' });
+        gsap.to(panel, {
+          height: inner.offsetHeight,
+          duration: 0.55,
+          ease: 'power3.inOut',
+          onComplete: () => gsap.set(panel, { height: 'auto' }),
+        });
+        gsap.fromTo(
+          inner.children,
+          { y: 16, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.45,
+            stagger: 0.06,
+            ease: 'power3.out',
+            delay: 0.12,
+          }
+        );
+      } else {
+        gsap.to(inner.children, {
+          y: -10,
+          opacity: 0,
+          duration: 0.22,
+          stagger: 0.03,
+          ease: 'power2.in',
+        });
+        gsap.to(panel, {
+          height: 0,
+          duration: 0.42,
+          ease: 'power3.inOut',
+          onComplete: () => gsap.set(panel, { visibility: 'hidden' }),
+        });
+      }
     });
   };
 
