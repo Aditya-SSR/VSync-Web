@@ -102,34 +102,6 @@ export default function Hero() {
                       );
                     }
 
-                    if (word === 'minimalistic,') {
-                      return (
-                        <span className="vs-hero__word" key={word}>
-                          {word}
-                          <img
-                            className="vs-hero__sticker vs-hero__sticker--smiley"
-                            src="/assets/deco/smiley-face.svg"
-                            alt=""
-                            aria-hidden="true"
-                          />
-                        </span>
-                      );
-                    }
-
-                    if (word === 'academic') {
-                      return (
-                        <span className="vs-hero__word" key={word}>
-                          {word}
-                          <img
-                            className="vs-hero__sticker vs-hero__sticker--star"
-                            src="/assets/deco/pink-star.svg"
-                            alt=""
-                            aria-hidden="true"
-                          />
-                        </span>
-                      );
-                    }
-
                     return (
                       <span className="vs-hero__word" key={word}>
                         {word}
@@ -140,6 +112,22 @@ export default function Hero() {
               </span>
             ))}
           </h1>
+
+          {/* Doodles hang off the centred block rather than individual words,
+              so they stay put at every width instead of drifting with the
+              ragged right edge of each line. */}
+          <img
+            className="vs-hero__sticker vs-hero__sticker--smiley"
+            src="/assets/deco/smiley-face.svg"
+            alt=""
+            aria-hidden="true"
+          />
+          <img
+            className="vs-hero__sticker vs-hero__sticker--star"
+            src="/assets/deco/pink-star.svg"
+            alt=""
+            aria-hidden="true"
+          />
 
           <div className="vs-hero__cta">
             {/* TODO: point at the real Play Store listing once it exists. */}
@@ -190,10 +178,6 @@ export default function Hero() {
                 />
               </svg>
             </a>
-
-            <span className="vs-hero__note">
-              free · no ads · no trackers · runs on your device
-            </span>
           </div>
         </div>
       </div>

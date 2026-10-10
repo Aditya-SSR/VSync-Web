@@ -1,20 +1,27 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
-import { gsap } from 'gsap';
+import { useEffect, useState } from 'react';
 
-const LETTERS = ['v', 's', 'y', 'n', 'c'];
+const LETTERS = ['v', 's', 'y', 'n', 'c', '.'];
+
+/* Timing, in ms. Kept in one place so the CSS delays and the JS state
+ * changes stay in step. */
+const HOLD = 1500; // wordmark up, bar filled, then lift
+const LIFT = 800; // slide-up duration
+const HARD_STOP = 5000; // absolute ceiling, nothing can outlive this
 
 export default function Preloader() {
-  const rootRef = useRef(null);
-  const lettersRef = useRef([]);
-  const lineRef = useRef(null);
-  const barRef = useRef(null);
-  const countRef = useRef(null);
+  const [lifting, setLifting] = useState(false);
+  const [gone, setGone] = useState(false);
 
   useEffect(() => {
-    const root = rootRef.current;
-    if (!root) return;
+    // Second visit this session — don't replay the intro. Deferred by a tick
+    // so the first paint matches the server render (setState is not called
+    // synchronously in the effect body).
+    if (document.documentElement.dataset.vsReady === '1') {
+      const id = window.setTimeout(() => setGone(true), 0);
+      return () => window.clearTimeout(id);
+    }
 
     const finish = () => {
       if (document.documentElement.dataset.vsReady === '1') return;
@@ -27,106 +34,50 @@ export default function Preloader() {
       window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     if (reduced) {
-      gsap.set(root, { autoAlpha: 0 });
       finish();
-      return;
+      const id = window.setTimeout(() => setGone(true), 0);
+      return () => window.clearTimeout(id);
     }
 
-    const letters = lettersRef.current.filter(Boolean);
-    const counter = { value: 0 };
-    let done = false;
+    // The lift is a CSS transition, not a GSAP tween: CSS keeps running on
+    // the compositor even when the rAF ticker is throttled, so the loader
+    // can never freeze half-off the screen and sit over the hero.
+    const lift = window.setTimeout(() => {
+      setLifting(true);
+      finish();
+    }, HOLD);
 
-    const tl = gsap.timeline({
-      defaults: { ease: 'power3.out' },
-      onComplete: () => {
-        done = true;
-        finish();
-      },
-    });
+    const unmount = window.setTimeout(() => {
+      finish();
+      setGone(true);
+    }, LIFT + 120);
 
-    tl.set(root, { yPercent: 0 })
-      .from(letters, {
-        yPercent: 120,
-        opacity: 0,
-        duration: 0.6,
-        stagger: 0.055,
-      })
-      .fromTo(
-        lineRef.current,
-        { strokeDashoffset: 1 },
-        { strokeDashoffset: 0, duration: 0.55, ease: 'power2.inOut' },
-        '-=0.28'
-      )
-      .to(
-        counter,
-        {
-          value: 100,
-          duration: 0.9,
-          ease: 'power1.inOut',
-          onUpdate: () => {
-            if (countRef.current) {
-              countRef.current.textContent = String(
-                Math.round(counter.value)
-              ).padStart(2, '0');
-            }
-            if (barRef.current) {
-              gsap.set(barRef.current, {
-                scaleX: Math.max(counter.value / 100, 0.02),
-              });
-            }
-          },
-        },
-        '-=0.45'
-      )
-      .to(
-        letters,
-        {
-          yPercent: -130,
-          opacity: 0,
-          duration: 0.42,
-          stagger: 0.03,
-          ease: 'power3.in',
-        },
-        '-=0.1'
-      )
-      // Hand the page over *as* the panel lifts, so the hero reveal plays
-      // underneath it instead of starting on an empty screen.
-      .call(finish, [], '-=0.1')
-      .to(
-        root,
-        { yPercent: -100, duration: 0.75, ease: 'expo.inOut' },
-        '-=0.12'
-      )
-      .set(root, { autoAlpha: 0 });
-
-    // Safety net: never trap the page behind the loader.
-    const guard = window.setTimeout(() => {
-      if (!done) {
-        gsap.set(root, { autoAlpha: 0 });
-        finish();
-      }
-    }, 5000);
+    const hardStop = window.setTimeout(() => {
+      finish();
+      setGone(true);
+    }, HARD_STOP);
 
     return () => {
-      window.clearTimeout(guard);
-      tl.kill();
+      window.clearTimeout(lift);
+      window.clearTimeout(unmount);
+      window.clearTimeout(hardStop);
     };
   }, []);
 
+  if (gone) return null;
+
   return (
-    <div className="vs-preloader" ref={rootRef} aria-hidden="true">
+    <div
+      className={'vs-preloader' + (lifting ? ' is-lifting' : '')}
+      aria-hidden="true"
+    >
       <div className="vs-preloader__stage">
         <div className="vs-preloader__word">
           {LETTERS.map((letter, i) => (
-            <span
-              key={letter + i}
-              className="vs-preloader__mask"
-            >
+            <span className="vs-preloader__mask" key={letter + i}>
               <span
                 className="vs-preloader__letter"
-                ref={(el) => {
-                  lettersRef.current[i] = el;
-                }}
+                style={{ '--i': i }}
               >
                 {letter}
               </span>
@@ -134,32 +85,9 @@ export default function Preloader() {
           ))}
         </div>
 
-        <svg
-          className="vs-preloader__line"
-          viewBox="0 0 220 14"
-          fill="none"
-          aria-hidden="true"
-        >
-          <path
-            ref={lineRef}
-            d="M4 9.5C38 4.5 74 3 112 3.2C150 3.4 186 5 216 8.4"
-            stroke="var(--vs-blue)"
-            strokeWidth="3"
-            strokeLinecap="round"
-            pathLength="1"
-            strokeDasharray="1"
-            strokeDashoffset="1"
-          />
-        </svg>
-
-        <div className="vs-preloader__meter">
-          <span className="vs-preloader__bar-track">
-            <span className="vs-preloader__bar" ref={barRef} />
-          </span>
-          <span className="vs-preloader__count">
-            <span ref={countRef}>00</span>%
-          </span>
-        </div>
+        <span className="vs-preloader__bar-track">
+          <span className="vs-preloader__bar" />
+        </span>
       </div>
     </div>
   );

@@ -3,7 +3,8 @@ import CursorBubble from '@/components/CursorBubble';
 import Preloader from '@/components/Preloader';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
-import Marquee from '@/components/Marquee';
+import Features from '@/components/Features';
+import FAQ from '@/components/FAQ';
 import Footer from '@/components/Footer';
 import './home.css';
 
@@ -22,7 +23,8 @@ export default function Home() {
       <Navbar />
       <main>
         <Hero />
-        <Marquee />
+        <Features />
+        <FAQ />
       </main>
       <Footer />
     </>

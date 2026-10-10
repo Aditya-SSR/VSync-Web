@@ -5,11 +5,13 @@ import Link from 'next/link';
 import { gsap } from 'gsap';
 
 const MENU_LINKS = [
-  { label: 'privacy policy', href: '/privacypolicy' },
-  { label: 'terms of use', href: '/terms' },
-  { label: 'minimal labs', href: '#' },
-  { label: 'lynx', href: '#' },
-  { label: 'DGK', href: '#' },
+  { label: 'Privacy Policy', href: '/privacypolicy' },
+  { label: 'Terms of Use', href: '/terms' },
+  // TODO: MinimalLabs, Lynx and DGK have no real destinations yet — point
+  // them at the actual sites before shipping rather than guessing URLs.
+  { label: 'MinimalLabs', href: '#' },
+  { label: 'Lynx', href: '#' },
+  { label: 'DGK', href: 'https://github.com/dgk1503' },
 ];
 
 export default function Navbar() {
@@ -22,14 +24,6 @@ export default function Navbar() {
     setOpen((current) => (current === which ? null : which));
   }, []);
 
-  /* ── Colour + stickiness ────────────────────────────────────────────────
-   * The nav sits in normal flow over the dark hero. Once the panel has
-   * scrolled clear of the viewport it flips to ink and pins to the top.
-   *
-   * NOTE: `getBoundingClientRect().bottom` is in *viewport* coordinates, so
-   * it must not be compared against `window.scrollY` (document coordinates).
-   * Comparing the two mixes frames and pins the nav halfway down the hero.
-   */
   useEffect(() => {
     const update = () => {
       const panel = document.querySelector('.vs-hero__panel');
@@ -41,9 +35,6 @@ export default function Navbar() {
       setOnLight(past);
     };
 
-    // No rAF throttle here on purpose: the work is one rect read, and a
-    // rAF-guarded flag latches permanently if rAF is throttled (background
-    // tab), which silently freezes the nav.
     update();
     window.addEventListener('scroll', update, { passive: true });
     window.addEventListener('resize', update, { passive: true });
@@ -63,18 +54,13 @@ export default function Navbar() {
     return () => window.removeEventListener('keydown', onKey);
   }, []);
 
-  /* ── Popout grow-out ──────────────────────────────────────────────────
-   * The card scales out of the trigger icon's own centre, the way the
-   * reference navbar does it.
-   */
+  /* ── Popout grow-out ────────────────────────────────────────────────── */
   useEffect(() => {
     const card = navRef.current?.querySelector(`#vs-card-${open}`);
     if (!card) return;
 
     const icon = card.parentElement.querySelector('[data-vs-origin]');
 
-    // The closed state is `scale(0)`, which collapses the measured rect to a
-    // point — restore it to 1 for one frame so the origin maths is real.
     gsap.set(card, { scale: 1 });
 
     const box = card.getBoundingClientRect();
@@ -147,23 +133,49 @@ export default function Navbar() {
                 (open === 'menu' ? ' is-open' : '')
               }
             >
-              <p className="vs-nav__card-label">vsync</p>
+              <p className="vs-nav__card-label vs-nav__card-item">vsync</p>
+
               <ul className="vs-nav__card-list">
-                {MENU_LINKS.map((item) =>
-                  item.href.startsWith('/') ? (
+                {MENU_LINKS.map((item) => {
+                  const external = item.href.startsWith('http');
+
+                  return (
                     <li key={item.label} className="vs-nav__card-item">
-                      <Link href={item.href} onClick={() => setOpen(null)}>
-                        {item.label}
-                      </Link>
+                      {item.href.startsWith('/') ? (
+                        <Link href={item.href} onClick={() => setOpen(null)}>
+                          {item.label}
+                        </Link>
+                      ) : (
+                        <a
+                          href={item.href}
+                          target={external ? '_blank' : undefined}
+                          rel={external ? 'noopener noreferrer' : undefined}
+                          onClick={() => setOpen(null)}
+                        >
+                          {item.label}
+                          {external && (
+                            <svg
+                              viewBox="0 0 24 24"
+                              width="12"
+                              height="12"
+                              aria-hidden="true"
+                              className="vs-nav__external"
+                            >
+                              <path
+                                d="M7 17L17 7M17 7H7M17 7V17"
+                                stroke="currentColor"
+                                strokeWidth="2.2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                fill="none"
+                              />
+                            </svg>
+                          )}
+                        </a>
+                      )}
                     </li>
-                  ) : (
-                    <li key={item.label} className="vs-nav__card-item">
-                      <a href={item.href} onClick={() => setOpen(null)}>
-                        {item.label}
-                      </a>
-                    </li>
-                  )
-                )}
+                  );
+                })}
               </ul>
             </div>
           </div>
@@ -229,8 +241,6 @@ export default function Navbar() {
                 Scan the QR code with your phone camera to pull VSync straight
                 from the Play Store.
               </p>
-              {/* TODO: point at the real Play Store listing once it exists.
-                  No placeholder listing URL is invented here. */}
               <a
                 href="#"
                 className="vs-nav__card-link vs-nav__card-item"

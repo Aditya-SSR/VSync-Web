@@ -1,25 +1,39 @@
 /* VSync · landing page
- * Rebuilt in the reference visual language: warm beige canvas, dark rounded
- * hero panel, hand-drawn stickers, custom cursors, gesture-driven cards.
+ * Warm beige canvas, dark rounded panels inset from the window, hand-drawn
+ * stickers, custom cursors, gesture-driven cards.
  */
 
-/* ─── Preloader ────────────────────────────────────────────────────────── */
+/* ─── Preloader ───────────────────────────────────────────────────────────
+ * Deliberately CSS-driven rather than GSAP. The previous version hid itself
+ * from the end of a GSAP timeline plus a setTimeout guard; when the rAF
+ * ticker stalls the timeline never reaches its end, the guard is the only
+ * thing left, and the panel can sit frozen half-way up over the hero.
+ * CSS transitions keep running on the compositor regardless.
+ *
+ * Markup is just the wordmark and a progress bar — no counter, no scribble.
+ */
 .vs-preloader {
   position: fixed;
   inset: 0;
   z-index: 9000;
-  background: var(--vs-bg);
   display: grid;
   place-items: center;
+  background: var(--vs-bg);
+  transform: translateY(0);
+  transition: transform 0.8s cubic-bezier(0.86, 0, 0.07, 1);
   will-change: transform;
+}
+
+.vs-preloader.is-lifting {
+  transform: translateY(-100%);
 }
 
 .vs-preloader__stage {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 24px;
-  width: min(340px, 74vw);
+  gap: 26px;
+  width: min(320px, 72vw);
 }
 
 .vs-preloader__word {
@@ -36,52 +50,66 @@
 .vs-preloader__mask {
   display: inline-block;
   overflow: hidden;
-  padding-bottom: 0.08em;
+  padding-bottom: 0.1em;
 }
 
 .vs-preloader__letter {
   display: inline-block;
-  will-change: transform;
+  animation: vs-pre-letter 0.62s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--i) * 55ms);
 }
 
-.vs-preloader__line {
-  width: 100%;
-  height: auto;
+.vs-preloader.is-lifting .vs-preloader__letter {
+  animation: vs-pre-letter-out 0.42s cubic-bezier(0.7, 0, 0.84, 0) both;
+  animation-delay: calc(var(--i) * 35ms);
 }
 
-.vs-preloader__meter {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  width: 100%;
+@keyframes vs-pre-letter {
+  from {
+    transform: translateY(118%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes vs-pre-letter-out {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-118%);
+  }
 }
 
 .vs-preloader__bar-track {
   position: relative;
-  flex: 1;
+  display: block;
+  width: 100%;
   height: 2px;
-  background: var(--vs-rule);
   overflow: hidden;
+  background: var(--vs-rule);
 }
 
 .vs-preloader__bar {
   position: absolute;
   inset: 0;
   background: var(--vs-ink);
-  transform: scaleX(0.02);
+  transform: scaleX(0);
   transform-origin: left center;
+  animation: vs-pre-bar 1.45s cubic-bezier(0.65, 0, 0.35, 1) forwards;
 }
 
-.vs-preloader__count {
-  font-family: 'DM Sans', sans-serif;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  color: var(--vs-muted);
-  font-variant-numeric: tabular-nums;
+@keyframes vs-pre-bar {
+  from {
+    transform: scaleX(0.02);
+  }
+  to {
+    transform: scaleX(1);
+  }
 }
 
-/* ─── Cursor bubble ───────────────────────────────────────────────────── */
+/* ─── Cursor bubble ─────────────────────────────────────────────────────── */
 .cursor-bubble {
   position: fixed;
   top: 0;
@@ -239,7 +267,6 @@
   opacity: 1;
 }
 
-/* Icon-only trigger — no label, exactly like the reference's corner icons. */
 .vs-nav__icon {
   display: grid;
   place-items: center;
@@ -263,13 +290,11 @@
   filter: none;
 }
 
-/* the play icon rests on its popout too — drop the shadow that only reads
-   against the dark hero */
 .vs-nav__play:has(+ .vs-nav__card.is-open) .vs-nav__icon svg {
   filter: none;
 }
 
-/* ─── Popout cards ──────────────────────────────────────────────────────
+/* ─── Popout cards ────────────────────────────────────────────────────────
  * GSAP scales each card out of its trigger icon's centre (see Navbar.jsx),
  * so the closed state only needs to be hidden — never display:none, which
  * would kill the measurement.
@@ -296,7 +321,43 @@
 .vs-nav__card--menu {
   left: -8px;
   width: 300px;
-  padding: 86px 24px 24px;
+  padding: 44px 24px 22px;
+}
+
+/* Menu links keep the exact casing they were given — no text-transform,
+   or "Privacy Policy" renders as "privacy policy". */
+.vs-nav__card--menu .vs-nav__card-label {
+  margin-bottom: 10px;
+}
+
+.vs-nav__card--menu .vs-nav__card-list a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  font-family: 'Epilogue', sans-serif;
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.2;
+  transition: color 0.2s ease, padding-left 0.25s ease;
+}
+
+.vs-nav__card--menu .vs-nav__card-list a:hover {
+  color: var(--vs-blue);
+  padding-left: 6px;
+}
+
+.vs-nav__external {
+  flex-shrink: 0;
+  opacity: 0.4;
+  transition: opacity 0.2s ease, transform 0.25s ease;
+}
+
+.vs-nav__card--menu a:hover .vs-nav__external {
+  opacity: 1;
+  transform: translate(1px, -1px);
 }
 
 .vs-nav__card--play {
@@ -332,22 +393,6 @@
   border-top: none;
 }
 
-.vs-nav__card-list a {
-  display: block;
-  padding: 11px 0;
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  text-transform: lowercase;
-  transition: color 0.2s ease, padding-left 0.25s ease;
-}
-
-.vs-nav__card-list a:hover {
-  color: var(--vs-blue);
-  padding-left: 6px;
-}
-
-/* QR plate — white card so the code reads on the beige popout. */
 .vs-nav__qr {
   width: 208px;
   height: 208px;
@@ -429,7 +474,13 @@
   }
 
   .vs-nav__card--menu {
-    width: min(268px, calc(100vw - 40px));
+    width: min(272px, calc(100vw - 40px));
+    padding: 36px 22px 20px;
+  }
+
+  .vs-nav__card--menu .vs-nav__card-list a {
+    font-size: 17px;
+    padding: 9px 0;
   }
 
   .vs-nav__card--play {
@@ -444,11 +495,10 @@
   }
 }
 
-/* ─── Hero: dark rounded panel, exactly one viewport tall ───────────────
- * The reference treats the hero as a card inset from the window edges:
- * `calc(100% - 24px)` wide, `calc(100vh - 24px)` tall, 12px of margin. The
- * old build used `min-height` *plus* large padding, so the panel grew past
- * the fold and pushed the rest of the page out of view.
+/* ─── Hero ────────────────────────────────────────────────────────────────
+ * The hero is a card inset from the window edges and exactly one viewport
+ * tall, with the headline centred in it. `min-height` plus large padding
+ * (the old approach) let the panel grow past the fold.
  */
 .vs-hero {
   width: calc(100% - 24px);
@@ -466,29 +516,27 @@
   color: var(--vs-white);
 }
 
-/* Headline + CTA are pinned to the bottom of the panel, like the reference. */
+/* `inset: 0` + `justify-content: center` centres the whole block — headline
+   and CTA together — in the middle of the panel on every screen size. */
 .vs-hero__content {
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   z-index: 3;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: clamp(20px, 3.4vh, 40px);
-  padding: 0 clamp(22px, 3vw, 44px) clamp(26px, 4vh, 48px);
+  align-items: center;
+  justify-content: center;
+  gap: clamp(22px, 3.6vh, 44px);
+  padding: clamp(96px, 12vh, 140px) clamp(18px, 4vw, 56px)
+    clamp(28px, 6vh, 60px);
+  text-align: center;
 }
 
-/* font-size is capped against vh as well as vw so four lines can never
-   outgrow a short window.
-   `width: 100%` is load-bearing: the parent is a flex column with
-   `align-items: flex-start`, so without it the h1 shrink-wraps to its
-   max-content width and the rows never wrap — the headline runs off the
-   panel on narrow screens. */
 .vs-hero__title {
   width: 100%;
-  font-size: clamp(1.55rem, min(6.4vw, 9.2vh), 5.4rem);
+  /* capped against vh as well as vw so four lines can never outgrow a
+     short window */
+  font-size: clamp(1.5rem, min(6.6vw, 9.6vh), 5.6rem);
   font-weight: 900;
   letter-spacing: -0.04em;
   line-height: 1.02;
@@ -504,6 +552,7 @@
 .vs-hero__row-inner {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 0 0.28em;
   will-change: transform;
 }
@@ -532,41 +581,37 @@
   opacity: 0.95;
 }
 
-/* Stickers must sit above the words that follow them in the DOM, otherwise
-   the next `.vs-hero__word` (position: relative) paints straight over.
-   They hang off the end of their line, in the open space to the right, so
-   they never collide with the neighbouring words. */
+/* Doodles hang off the centred panel itself, so they stay balanced at every
+   width instead of drifting with each line's ragged edge. */
 .vs-hero__sticker {
   position: absolute;
-  z-index: 3;
-  top: 50%;
+  z-index: 4;
   pointer-events: none;
 }
 
 .vs-hero__sticker--smiley {
-  width: clamp(32px, 4.4vh, 76px);
-  right: -0.95em;
-  transform: translateY(-54%) rotate(11deg);
+  width: clamp(34px, 5.4vh, 82px);
+  top: 21%;
+  left: 7%;
+  transform: rotate(12deg);
 }
 
 .vs-hero__sticker--star {
-  width: clamp(30px, 4.4vh, 70px);
-  right: -0.85em;
-  transform: translateY(-50%) rotate(-9deg);
+  width: clamp(28px, 4.4vh, 68px);
+  bottom: 18%;
+  right: 8%;
+  transform: rotate(-10deg);
 }
 
 .vs-hero__cta {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 18px;
   flex-wrap: wrap;
 }
 
-/* ─── "get it on google play" badge ────────────────────────────────────
- * Two-line Play Store badge: a small kicker over the store name, glyph
- * left, arrow right. The arrow slides in and the whole badge sits up on
- * hover, matching the reference's tactile hover language.
- */
+/* ─── "get it on google play" badge ────────────────────────────────────── */
 .vs-hero__btn {
   display: inline-flex;
   align-items: center;
@@ -576,8 +621,8 @@
   background: var(--vs-white);
   color: var(--vs-dark);
   box-shadow: 0 14px 30px -18px rgba(0, 0, 0, 0.75);
-  transition: background 0.25s ease, transform 0.3s cubic-bezier(0.2, 0.9, 0.25, 1.2),
-    box-shadow 0.3s ease;
+  transition: background 0.25s ease,
+    transform 0.3s cubic-bezier(0.2, 0.9, 0.25, 1.2), box-shadow 0.3s ease;
 }
 
 .vs-hero__btn:hover {
@@ -612,7 +657,6 @@
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--vs-muted);
-  transition: color 0.25s ease;
 }
 
 .vs-hero__btn-store {
@@ -651,25 +695,22 @@
   }
 }
 
-.vs-hero__note {
-  font-family: 'DM Sans', sans-serif;
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0.01em;
-  color: rgba(255, 255, 255, 0.62);
-}
-
 /* bottom gradient fade inside the panel, like the reference hero */
 .vs-hero__fade {
   position: absolute;
   inset: 0;
   z-index: 2;
-  background: linear-gradient(
-    to bottom,
-    transparent 26%,
-    rgba(0, 0, 0, 0.2) 58%,
-    rgba(0, 0, 0, 0.72) 100%
-  );
+  background: radial-gradient(
+      120% 90% at 50% 55%,
+      rgba(255, 255, 255, 0.07),
+      transparent 60%
+    ),
+    linear-gradient(
+      to bottom,
+      transparent 30%,
+      rgba(0, 0, 0, 0.22) 62%,
+      rgba(0, 0, 0, 0.62) 100%
+    );
   pointer-events: none;
 }
 
@@ -685,25 +726,28 @@
     border-radius: 22px;
   }
 
+  .vs-hero__content {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
   .vs-hero__scribble {
     width: 175%;
     height: 175%;
   }
 
   .vs-hero__sticker--smiley {
-    right: -0.55em;
+    top: 15%;
+    left: 5%;
   }
 
   .vs-hero__sticker--star {
-    right: -0.5em;
-  }
-
-  .vs-hero__note {
-    font-size: 12px;
+    bottom: 12%;
+    right: 6%;
   }
 }
 
-/* ─── Marquee ─────────────────────────────────────────────────────────── */
+/* ─── Marquee ───────────────────────────────────────────────────────────── */
 .vs-marquee {
   position: relative;
   overflow: hidden;
@@ -730,88 +774,715 @@
   color: var(--vs-ink);
 }
 
-.vs-marquee__item svg {
-  color: var(--vs-blue);
-  flex-shrink: 0;
+/* ─── Features: fanned cards with inertia ─────────────────────────────────
+ * Structure and physics lifted from the reference: a blob behind a fan of
+ * tilted cards, each with a floating caption pill that gets thrown on exit.
+ */
+.vs-features {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  padding: clamp(80px, 10vw, 150px) clamp(18px, 3vw, 44px)
+    clamp(70px, 9vw, 130px);
+  text-align: center;
 }
 
-/* ─── Footer ──────────────────────────────────────────────────────────── */
-.vs-footer {
-  padding: clamp(28px, 4vw, 46px) clamp(18px, 3vw, 42px);
+.vs-features__heading {
+  position: relative;
+  max-width: 900px;
+  margin: 0 auto clamp(46px, 6vw, 78px);
 }
 
-.vs-footer__inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 18px 26px;
-}
-
-.vs-footer__brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.vs-footer__wordmark {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 20px;
+.vs-features__title {
+  font-size: clamp(2.4rem, 7vw, 6.6rem);
   font-weight: 900;
-  letter-spacing: -0.035em;
+  line-height: 0.92;
+  letter-spacing: -0.05em;
   text-transform: lowercase;
 }
 
-.vs-footer__dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--vs-blue);
+.vs-features__subtitle {
+  position: relative;
+  display: inline-block;
+  margin-top: 0.06em;
+  font-family: 'Times New Roman', Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(2.2rem, 6.6vw, 6.2rem);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  color: var(--vs-blue);
 }
 
-.vs-footer__team {
+/* anchored to the section's top-right corner — see Features.jsx */
+.vs-features__sticker {
+  position: absolute;
+  top: clamp(70px, 8.5vw, 124px);
+  right: clamp(18px, 5.5vw, 84px);
+  width: clamp(52px, 7.5vw, 118px);
+  transform: rotate(-10deg);
+}
+
+.vs-features__sticker img {
+  width: 100%;
+  height: auto;
+}
+
+.vs-features__underline {
+  display: block;
+  width: min(620px, 80%);
+  height: auto;
+  margin: clamp(-26px, -2.6vw, -12px) auto 0;
+  color: var(--vs-ink);
+}
+
+.vs-features__stage {
+  position: relative;
+  width: 100%;
+  max-width: 1100px;
+  height: 550px;
+  margin: clamp(30px, 4vw, 40px) auto clamp(50px, 7vw, 80px);
+}
+
+.vs-features__blob {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  /* the reference parks the blob at translate(-116.5%, -45%), which tucks it
+     behind their left-most cards. Ours are centred in the stage, so it is
+     pulled right to sit under the deck instead of floating off on its own. */
+  transform: translate(-92%, -45%);
+  width: 580px;
+  max-width: 96%;
+  height: 500px;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.vs-features__blob img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.vs-features__cards {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+/* Card geometry, rotations and stacking copied straight from the reference
+   so the deck reads the same: 17vw x 22vw, alternate tilt, negative
+   right-margin plus a `left` nudge, z-index climbing left to right. */
+.vs-features__card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 17vw;
+  height: 22vw;
+  padding: clamp(12px, 1.1vw, 20px);
+  border-radius: 0.375rem;
+  overflow: clip;
+  background: var(--card-bg);
+  color: var(--card-ink);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  text-align: left;
+}
+
+.vs-features__card--1 {
+  transform: rotate(-6deg);
+  margin-right: -2vw;
+  z-index: 1;
+}
+
+.vs-features__card--2 {
+  transform: rotate(6deg);
+  margin-right: -2vw;
+  left: -2rem;
+  bottom: -3rem;
+  z-index: 2;
+}
+
+.vs-features__card--3 {
+  transform: rotate(-6deg);
+  margin-right: -2vw;
+  left: -3rem;
+  z-index: 3;
+}
+
+.vs-features__card--4 {
+  transform: rotate(4deg);
+  margin-right: -2vw;
+  left: -3.5rem;
+  bottom: -2rem;
+  z-index: 4;
+}
+
+/* Title + points sit in the vertical middle and the number is pinned to the
+   corner, so the floating pills can drift across a card without ever landing
+   on the type. */
+.vs-features__card-num {
+  position: absolute;
+  top: clamp(12px, 1.1vw, 20px);
+  left: clamp(12px, 1.1vw, 20px);
   font-family: 'DM Sans', sans-serif;
-  font-size: 11px;
+  font-size: clamp(9px, 0.72vw, 12px);
   font-weight: 700;
-  letter-spacing: 0.13em;
+  letter-spacing: 0.1em;
+  opacity: 0.6;
+}
+
+.vs-features__card-body {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Each card is covered on its right by the next one, so the copy is sized to
+   live inside the left ~60% of the card and stay legible. */
+.vs-features__card-title {
+  font-size: clamp(0.95rem, 1.9vw, 1.85rem);
+  font-weight: 900;
+  letter-spacing: -0.045em;
+  line-height: 0.98;
+  text-transform: lowercase;
+  overflow-wrap: anywhere;
+  margin-bottom: 8px;
+}
+
+.vs-features__card-points {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: clamp(9px, 0.72vw, 12px);
+  font-weight: 500;
+  line-height: 1.3;
+  opacity: 0.78;
+}
+
+/* the caption lives in the floating pill on desktop, in the card on mobile */
+.vs-features__card-cap {
+  display: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: clamp(10px, 0.8vw, 13px);
+  font-weight: 500;
+  line-height: 1.3;
+  opacity: 0.85;
+}
+
+.vs-features__labels {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.vs-features__label {
+  position: absolute;
+  z-index: 10;
+  transform: translate(-50%, -50%);
+  padding: 0.1vw 0.5vw;
+  border-radius: 9999px;
+  border-bottom-left-radius: 0;
+  background: var(--label-bg);
+  color: var(--vs-ink);
+  font-family: 'DM Sans', sans-serif;
+  font-size: clamp(10px, 1rem, 16px);
+  font-weight: 450;
+  white-space: nowrap;
+  pointer-events: auto;
+}
+
+/* Positions follow the reference's pill placement (31/30, 69/48, 46/89),
+   with a fourth added for the fourth card. The card type now sits in the
+   middle band, so a pill crossing a card never lands on the copy. */
+.vs-features__label--1 {
+  top: 31%;
+  left: 30%;
+}
+
+.vs-features__label--2 {
+  top: 69%;
+  left: 48%;
+}
+
+.vs-features__label--3 {
+  top: 46%;
+  left: 89%;
+}
+
+.vs-features__label--4 {
+  top: 22%;
+  left: 66%;
+}
+
+.vs-features__desc {
+  max-width: 640px;
+  margin: clamp(36px, 5vw, 68px) auto 0;
+  font-family: 'DM Sans', sans-serif;
+  font-size: clamp(14px, 1.3vw, 17px);
+  font-weight: 400;
+  line-height: 1.7;
+}
+
+@media (max-width: 900px) {
+  /* The overlapping deck needs real width. Below this it un-fans into a
+     plain grid and the caption moves into the card so nothing is lost. */
+  .vs-features__stage {
+    height: auto;
+    margin-bottom: clamp(40px, 6vw, 60px);
+  }
+
+  /* the headline runs nearly full-bleed at this width, so the corner sticker
+     has nowhere to sit without landing on it */
+  .vs-features__sticker {
+    display: none;
+  }
+
+  .vs-features__blob,
+  .vs-features__labels {
+    display: none;
+  }
+
+  .vs-features__cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    height: auto;
+  }
+
+  .vs-features__card {
+    width: 100%;
+    height: 178px;
+    padding: 16px 15px;
+    left: auto;
+    bottom: auto;
+    margin: 0;
+    transform: none;
+  }
+
+  .vs-features__card-num {
+    font-size: 11px;
+  }
+
+  .vs-features__card-title {
+    font-size: clamp(1.05rem, 4.4vw, 1.5rem);
+  }
+
+  .vs-features__card-points {
+    display: none;
+  }
+
+  .vs-features__card-cap {
+    display: block;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 460px) {
+  .vs-features__cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .vs-features__card {
+    height: 132px;
+  }
+}
+
+/* ─── FAQ ─────────────────────────────────────────────────────────────────
+ * Its own dark panel, inset from the window exactly like the hero, so the
+ * section separates hard from the beige instead of blending into it.
+ */
+.vs-faq {
+  width: calc(100% - 24px);
+  margin: 12px auto;
+}
+
+.vs-faq__panel {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.22fr);
+  gap: clamp(28px, 5vw, 72px);
+  align-items: start;
+  overflow: hidden;
+  border-radius: var(--vs-radius-panel);
+  background: var(--vs-dark);
+  color: var(--vs-white);
+  padding: clamp(48px, 7vw, 100px) clamp(22px, 4vw, 76px)
+    clamp(40px, 6vw, 84px);
+}
+
+.vs-faq__head {
+  /* no `position: sticky` here — inside the grid area it gets offset by its
+     own `top` value and lands ~130px below the list instead of aligning to
+     it. The heading is short, so pinning buys nothing anyway. */
+  position: relative;
+}
+
+.vs-faq__eyebrow {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--vs-muted);
-  border-left: 1px solid var(--vs-rule);
-  padding-left: 12px;
+  color: var(--vs-blue);
+  margin-bottom: 16px;
+}
+
+.vs-faq__title {
+  position: relative;
+  display: inline-block;
+  font-size: clamp(2rem, 4.6vw, 3.9rem);
+  font-weight: 900;
+  letter-spacing: -0.05em;
+  line-height: 0.96;
+  text-transform: lowercase;
+}
+
+.vs-faq__sticker {
+  position: absolute;
+  top: -0.3em;
+  right: -1em;
+  width: clamp(30px, 4.2vw, 62px);
+}
+
+.vs-faq__sticker img {
+  width: 100%;
+  height: auto;
+}
+
+.vs-faq__list {
+  display: flex;
+  flex-direction: column;
+}
+
+.vs-faq__item {
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.vs-faq__item:last-child {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.vs-faq__trigger {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  width: 100%;
+  padding: 22px 0;
+  text-align: left;
+  color: inherit;
+}
+
+.vs-faq__num {
+  flex-shrink: 0;
+  padding-top: 0.55em;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--vs-blue);
+}
+
+.vs-faq__q {
+  flex: 1;
+  font-size: clamp(1rem, 1.85vw, 1.45rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.22;
+  transition: color 0.25s ease;
+}
+
+.vs-faq__item.is-open .vs-faq__q {
+  color: var(--vs-pink);
+}
+
+.vs-faq__sign {
+  position: relative;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  margin-top: 2px;
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  border-radius: 50%;
+  /* No rotation on the container — rotating it also turns the horizontal bar
+     vertical, which is what made the open state read as "|" instead of "-". */
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.vs-faq__sign-bar {
+  position: absolute;
+  background: currentColor;
+  border-radius: 2px;
+}
+
+.vs-faq__sign-bar--h {
+  width: 11px;
+  height: 1.8px;
+}
+
+.vs-faq__sign-bar--v {
+  width: 1.8px;
+  height: 11px;
+  transition: transform 0.35s cubic-bezier(0.2, 0.9, 0.25, 1.1),
+    opacity 0.25s ease;
+}
+
+.vs-faq__item.is-open .vs-faq__sign {
+  background: var(--vs-pink);
+  border-color: var(--vs-pink);
+  color: var(--vs-dark);
+}
+
+.vs-faq__item.is-open .vs-faq__sign-bar--v {
+  opacity: 0;
+  transform: scaleY(0);
+}
+
+/* height is driven entirely by GSAP (FAQ.jsx) — never by React inline
+   styles, or the two overwrite each other */
+.vs-faq__body {
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+}
+
+.vs-faq__answer {
+  padding: 0 42px 26px 0;
+  font-family: 'DM Sans', sans-serif;
+  font-size: clamp(13.5px, 1.15vw, 15.5px);
+  font-weight: 400;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.vs-faq__answer p + p {
+  margin-top: 14px;
+}
+
+.vs-faq__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  background: var(--vs-white);
+  color: var(--vs-dark);
+  font-size: 13px;
+  font-weight: 800;
+  transition: background 0.25s ease, transform 0.25s ease;
+}
+
+.vs-faq__cta:hover {
+  background: var(--vs-pink);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 860px) {
+  .vs-faq__panel {
+    grid-template-columns: minmax(0, 1fr);
+    padding: clamp(40px, 8vw, 60px) clamp(18px, 5vw, 30px)
+      clamp(34px, 7vw, 50px);
+  }
+
+  .vs-faq__head {
+    position: static;
+  }
+
+  .vs-faq__head {
+    position: static;
+  }
+
+  .vs-faq__answer {
+    padding-right: 0;
+  }
+
+  .vs-faq__trigger {
+    padding: 18px 0;
+  }
+}
+
+/* ─── Footer ──────────────────────────────────────────────────────────────
+ * Blue inset panel, columns up top, and a wordmark pinned edge to edge
+ * across the bottom. `textLength` makes the SVG text match the viewBox
+ * exactly, so it always spans the full width without distorting glyphs.
+ */
+.vs-footer {
+  width: calc(100% - 24px);
+  margin: 12px auto;
+}
+
+.vs-footer__inner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: min(64vh, 600px);
+  overflow: hidden;
+  border-radius: var(--vs-radius-panel);
+  background: var(--vs-blue);
+  color: var(--vs-white);
+  padding: clamp(32px, 5vw, 60px) clamp(20px, 3.4vw, 54px) 0;
+}
+
+.vs-footer__top {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 28px 40px;
+}
+
+.vs-footer__col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.vs-footer__badge {
+  display: inline-block;
+  padding: 5px 13px;
+  border-radius: 20px;
+  border-bottom-left-radius: 3px;
+  background: var(--vs-white);
+  color: var(--vs-ink);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.vs-footer__headline {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: clamp(1.4rem, 3vw, 2.4rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  transition: opacity 0.2s ease;
+}
+
+a.vs-footer__headline:hover {
+  opacity: 0.75;
+}
+
+.vs-footer__headline svg {
+  flex-shrink: 0;
+  transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.25, 1.2);
+}
+
+a.vs-footer__headline:hover svg {
+  transform: translate(3px, -3px);
+}
+
+.vs-footer__sub {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  opacity: 0.78;
+}
+
+.vs-footer__sub--mail {
+  text-decoration: underline;
+  text-underline-offset: 5px;
+  text-decoration-thickness: 1px;
+}
+
+.vs-footer__sub--mail:hover {
+  opacity: 1;
+}
+
+.vs-footer__marks {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 20px;
+  margin-top: auto;
+  padding: 26px 0;
 }
 
 .vs-footer__links {
   display: flex;
-  flex-wrap: wrap;
   gap: 20px;
 }
 
 .vs-footer__links a {
+  font-family: 'DM Sans', sans-serif;
   font-size: 13px;
   font-weight: 700;
-  letter-spacing: 0.02em;
-  text-transform: lowercase;
-  color: var(--vs-muted);
-  transition: color 0.2s ease;
+  opacity: 0.85;
+  transition: opacity 0.2s ease;
 }
 
 .vs-footer__links a:hover {
-  color: var(--vs-blue);
+  opacity: 1;
 }
 
-.vs-footer__meta {
+.vs-footer__crew {
   font-family: 'DM Sans', sans-serif;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--vs-muted);
+  opacity: 0.7;
+}
+
+.vs-footer__mark {
+  /* pulls the wordmark back out to the panel's own edges, so it spans the
+     full width instead of stopping at the content gutter */
+  margin-left: calc(-1 * clamp(20px, 3.4vw, 54px));
+  margin-right: calc(-1 * clamp(20px, 3.4vw, 54px));
+  margin-top: 2px;
+  color: var(--vs-white);
+  line-height: 0;
+}
+
+.vs-footer__mark svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* 344px measures ~1000 units of natural advance at this tracking, so
+   `textLength` lands on the real width instead of stretching the tracking
+   (at 290px it was 842 units, i.e. 19% letter-spaced apart). */
+.vs-footer__mark text {
+  font-family: 'Epilogue', sans-serif;
+  font-size: 344px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
 }
 
 @media (max-width: 720px) {
+  .vs-footer {
+    width: calc(100% - 16px);
+    margin: 8px auto;
+  }
+
   .vs-footer__inner {
-    justify-content: flex-start;
+    min-height: auto;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .vs-footer__top {
+    flex-direction: column;
+  }
+
+  .vs-footer__marks {
+    margin-top: 36px;
   }
 }
