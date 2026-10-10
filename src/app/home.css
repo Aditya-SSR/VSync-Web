@@ -18,8 +18,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 22px;
-  width: min(560px, 84vw);
+  gap: 24px;
+  width: min(340px, 74vw);
 }
 
 .vs-preloader__word {
@@ -45,7 +45,7 @@
 }
 
 .vs-preloader__line {
-  width: min(300px, 60vw);
+  width: 100%;
   height: auto;
 }
 
@@ -53,7 +53,7 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  width: min(300px, 60vw);
+  width: 100%;
 }
 
 .vs-preloader__bar-track {
@@ -107,9 +107,12 @@
   }
 }
 
-/* ─── Navbar ──────────────────────────────────────────────────────────── */
+/* ─── Navbar ──────────────────────────────────────────────────────────────
+ * Sits in normal flow over the hero (non-sticky), then pins to the top once
+ * the dark panel has scrolled away — `.vs-nav--stuck` from Navbar.jsx.
+ */
 .vs-nav {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;
@@ -117,13 +120,71 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px clamp(18px, 3vw, 42px);
+  gap: 16px;
+  padding: 26px clamp(20px, 2.6vw, 40px);
   color: var(--vs-white);
-  transition: color 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: color 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+    padding 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.vs-nav--stuck {
+  position: fixed;
+  padding-top: 14px;
+  padding-bottom: 14px;
+  background: rgba(240, 235, 230, 0.72);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  backdrop-filter: blur(16px) saturate(140%);
+  box-shadow: inset 0 -1px 0 var(--vs-rule);
 }
 
 .vs-nav--on-light {
   color: var(--vs-ink);
+}
+
+.vs-nav__side {
+  display: flex;
+  align-items: center;
+  /* Each side reserves the width of its own popout so the centre logo and
+     the opposite trigger can never be covered by the card. */
+  width: 320px;
+}
+
+.vs-nav__side--left {
+  justify-content: flex-start;
+}
+
+.vs-nav__side--right {
+  justify-content: flex-end;
+}
+
+.vs-nav__center {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vs-nav__logo {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  text-transform: lowercase;
+  color: inherit;
+}
+
+.vs-nav__logo-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--vs-blue);
+  transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.25, 1.2);
+}
+
+.vs-nav__logo:hover .vs-nav__logo-dot {
+  transform: scale(1.6);
 }
 
 .vs-nav__backdrop {
@@ -133,16 +194,20 @@
   background: rgba(0, 0, 0, 0.35);
   opacity: 0;
   visibility: hidden;
+  pointer-events: none;
   transition: opacity 0.35s ease, visibility 0.35s ease;
 }
 
 .vs-nav__backdrop.is-open {
   opacity: 1;
   visibility: visible;
+  pointer-events: auto;
 }
 
 .vs-nav__trigger-wrap {
   position: relative;
+  display: flex;
+  align-items: center;
 }
 
 .vs-nav__menu,
@@ -152,59 +217,96 @@
   display: inline-flex;
   align-items: center;
   gap: 9px;
-  font-size: 15px;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-  text-transform: lowercase;
   color: inherit;
 }
 
-.vs-nav__play {
-  padding: 9px 16px;
-  border: 1.5px solid currentColor;
-  border-radius: 999px;
-}
-
-.vs-nav__play-text {
-  font-size: 14px;
+.vs-nav__menu {
+  font-size: 26px;
   font-weight: 800;
+  letter-spacing: -0.03em;
+  text-transform: lowercase;
+  transition: opacity 0.25s ease;
 }
 
-/* the card grows out of the trigger's own centre */
+.vs-nav__menu:hover {
+  opacity: 0.6;
+}
+
+/* The trigger sits on top of its own popout, so it has to flip to ink the
+   moment that card opens — otherwise white-on-beige is unreadable. */
+.vs-nav__menu.is-open {
+  color: var(--vs-ink);
+  opacity: 1;
+}
+
+/* Icon-only trigger — no label, exactly like the reference's corner icons. */
+.vs-nav__icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 40px;
+  transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.25, 1.2);
+}
+
+.vs-nav__play:hover .vs-nav__icon {
+  transform: rotate(-6deg) scale(1.08);
+}
+
+.vs-nav__icon svg {
+  width: 26px;
+  height: 28px;
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.22));
+  transition: filter 0.3s ease;
+}
+
+.vs-nav--on-light .vs-nav__icon svg {
+  filter: none;
+}
+
+/* the play icon rests on its popout too — drop the shadow that only reads
+   against the dark hero */
+.vs-nav__play:has(+ .vs-nav__card.is-open) .vs-nav__icon svg {
+  filter: none;
+}
+
+/* ─── Popout cards ──────────────────────────────────────────────────────
+ * GSAP scales each card out of its trigger icon's centre (see Navbar.jsx),
+ * so the closed state only needs to be hidden — never display:none, which
+ * would kill the measurement.
+ */
 .vs-nav__card {
   position: absolute;
-  top: -6px;
-  width: 260px;
-  padding: 22px;
+  top: 4px;
+  z-index: 8050;
   border-radius: 18px;
-  background: var(--vs-white);
+  background: var(--vs-bg);
   color: var(--vs-ink);
-  box-shadow: 0 24px 60px -28px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 30px 70px -30px rgba(0, 0, 0, 0.5);
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transform: scale(0.2);
-  transition: transform 0.5s cubic-bezier(0.2, 0.9, 0.25, 1.05),
-    opacity 0.3s ease, visibility 0.3s ease;
+  transform: scale(0);
   will-change: transform;
 }
 
+.vs-nav__card.is-open {
+  pointer-events: auto;
+}
+
 .vs-nav__card--menu {
-  left: -12px;
-  transform-origin: 14px 22px;
+  left: -8px;
+  width: 300px;
+  padding: 86px 24px 24px;
 }
 
 .vs-nav__card--play {
-  right: -12px;
-  width: 300px;
-  transform-origin: calc(100% - 18px) 22px;
-}
-
-.vs-nav__card.is-open {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-  transform: scale(1);
+  right: -8px;
+  width: 320px;
+  padding: 92px 26px 26px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 .vs-nav__card-label {
@@ -245,34 +347,55 @@
   padding-left: 6px;
 }
 
+/* QR plate — white card so the code reads on the beige popout. */
+.vs-nav__qr {
+  width: 208px;
+  height: 208px;
+  padding: 10px;
+  object-fit: contain;
+  border-radius: 14px;
+  background: var(--vs-white);
+  box-shadow: 0 12px 26px -16px rgba(0, 0, 0, 0.45);
+  margin-bottom: 22px;
+}
+
 .vs-nav__card-title {
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 900;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.035em;
   text-transform: lowercase;
-  margin-bottom: 10px;
+  line-height: 1;
+  margin-bottom: 12px;
 }
 
 .vs-nav__card-desc {
   font-family: 'DM Sans', sans-serif;
-  font-size: 13.5px;
-  line-height: 1.5;
+  font-size: 14px;
+  line-height: 1.45;
   color: var(--vs-muted);
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .vs-nav__card-link {
   display: inline-flex;
   flex-direction: column;
+  align-items: center;
   gap: 6px;
-  font-size: 13px;
+  padding-bottom: 4px;
+  font-size: 14px;
   font-weight: 800;
+  letter-spacing: -0.01em;
   text-transform: lowercase;
   color: var(--vs-ink);
+  transition: color 0.2s ease;
+}
+
+.vs-nav__card-link:hover {
+  color: var(--vs-blue);
 }
 
 .vs-nav__card-link svg {
-  width: 100%;
+  width: 150px;
   height: 9px;
   color: var(--vs-ink);
   overflow: visible;
@@ -280,52 +403,96 @@
 
 .vs-nav__card-link svg path {
   stroke-dasharray: 200;
-  stroke-dashoffset: 200;
+  stroke-dashoffset: 0;
   transition: stroke-dashoffset 0.6s ease-out;
 }
 
-.vs-nav__card.is-open .vs-nav__card-link svg path {
-  stroke-dashoffset: 0;
+.vs-nav__card:not(.is-open) .vs-nav__card-link svg path {
+  stroke-dashoffset: 200;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 860px) {
   .vs-nav {
-    padding: 16px 16px;
+    padding: 18px 16px;
+  }
+
+  .vs-nav__menu {
+    font-size: 21px;
+  }
+
+  .vs-nav__logo {
+    font-size: 20px;
+  }
+
+  .vs-nav__side {
+    width: auto;
+  }
+
+  .vs-nav__card--menu {
+    width: min(268px, calc(100vw - 40px));
   }
 
   .vs-nav__card--play {
-    width: min(280px, calc(100vw - 32px));
+    right: -6px;
+    width: min(300px, calc(100vw - 32px));
+    padding: 84px 22px 22px;
+  }
+
+  .vs-nav__qr {
+    width: 172px;
+    height: 172px;
   }
 }
 
-/* ─── Hero: dark full-bleed rounded panel ─────────────────────────────── */
+/* ─── Hero: dark rounded panel, exactly one viewport tall ───────────────
+ * The reference treats the hero as a card inset from the window edges:
+ * `calc(100% - 24px)` wide, `calc(100vh - 24px)` tall, 12px of margin. The
+ * old build used `min-height` *plus* large padding, so the panel grew past
+ * the fold and pushed the rest of the page out of view.
+ */
 .vs-hero {
-  position: relative;
-  padding: 0 clamp(10px, 1.4vw, 18px);
+  width: calc(100% - 24px);
+  height: calc(100vh - 24px);
+  height: calc(100svh - 24px);
+  margin: 12px auto;
 }
 
 .vs-hero__panel {
   position: relative;
   overflow: hidden;
-  min-height: 88vh;
+  height: 100%;
   border-radius: var(--vs-radius-panel);
   background: var(--vs-dark);
   color: var(--vs-white);
-  padding: clamp(120px, 16vw, 190px) clamp(22px, 5vw, 76px)
-    clamp(56px, 8vw, 96px);
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  gap: clamp(30px, 5vw, 54px);
 }
 
+/* Headline + CTA are pinned to the bottom of the panel, like the reference. */
+.vs-hero__content {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(20px, 3.4vh, 40px);
+  padding: 0 clamp(22px, 3vw, 44px) clamp(26px, 4vh, 48px);
+}
+
+/* font-size is capped against vh as well as vw so four lines can never
+   outgrow a short window.
+   `width: 100%` is load-bearing: the parent is a flex column with
+   `align-items: flex-start`, so without it the h1 shrink-wraps to its
+   max-content width and the rows never wrap — the headline runs off the
+   panel on narrow screens. */
 .vs-hero__title {
-  font-size: clamp(2.1rem, 6.4vw, 5.4rem);
+  width: 100%;
+  font-size: clamp(1.55rem, min(6.4vw, 9.2vh), 5.4rem);
   font-weight: 900;
   letter-spacing: -0.04em;
   line-height: 1.02;
   text-transform: lowercase;
-  max-width: 20ch;
 }
 
 .vs-hero__row {
@@ -365,68 +532,122 @@
   opacity: 0.95;
 }
 
+/* Stickers must sit above the words that follow them in the DOM, otherwise
+   the next `.vs-hero__word` (position: relative) paints straight over.
+   They hang off the end of their line, in the open space to the right, so
+   they never collide with the neighbouring words. */
 .vs-hero__sticker {
   position: absolute;
+  z-index: 3;
+  top: 50%;
   pointer-events: none;
 }
 
 .vs-hero__sticker--smiley {
-  width: clamp(30px, 3.4vw, 52px);
-  right: -0.5em;
-  top: -0.42em;
-  transform: rotate(11deg);
+  width: clamp(32px, 4.4vh, 76px);
+  right: -0.95em;
+  transform: translateY(-54%) rotate(11deg);
 }
 
 .vs-hero__sticker--star {
-  width: clamp(20px, 2.2vw, 34px);
-  right: -0.6em;
-  top: -0.5em;
-  transform: rotate(-9deg);
+  width: clamp(30px, 4.4vh, 70px);
+  right: -0.85em;
+  transform: translateY(-50%) rotate(-9deg);
 }
 
 .vs-hero__cta {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 18px;
   flex-wrap: wrap;
 }
 
+/* ─── "get it on google play" badge ────────────────────────────────────
+ * Two-line Play Store badge: a small kicker over the store name, glyph
+ * left, arrow right. The arrow slides in and the whole badge sits up on
+ * hover, matching the reference's tactile hover language.
+ */
 .vs-hero__btn {
   display: inline-flex;
   align-items: center;
-  padding: 16px 26px;
+  gap: 13px;
+  padding: 9px 16px 9px 13px;
   border-radius: 999px;
   background: var(--vs-white);
   color: var(--vs-dark);
-  font-size: 14px;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-  text-transform: lowercase;
-  transition: background 0.25s ease, transform 0.25s ease;
+  box-shadow: 0 14px 30px -18px rgba(0, 0, 0, 0.75);
+  transition: background 0.25s ease, transform 0.3s cubic-bezier(0.2, 0.9, 0.25, 1.2),
+    box-shadow 0.3s ease;
 }
 
 .vs-hero__btn:hover {
   background: var(--vs-pink);
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: 0 20px 38px -18px rgba(0, 0, 0, 0.8);
 }
 
-.vs-hero__btn-text {
-  display: inline-block;
+.vs-hero__btn-glyph {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  transition: transform 0.35s cubic-bezier(0.2, 0.9, 0.25, 1.2);
 }
 
-.vs-hero__btn:hover .vs-hero__btn-text {
-  animation: vs-wiggle 0.24s steps(1) infinite;
+.vs-hero__btn:hover .vs-hero__btn-glyph {
+  transform: rotate(-8deg) scale(1.06);
+}
+
+.vs-hero__btn-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1;
+  gap: 3px;
+}
+
+.vs-hero__btn-kicker {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--vs-muted);
+  transition: color 0.25s ease;
+}
+
+.vs-hero__btn-store {
+  font-size: 19px;
+  font-weight: 900;
+  letter-spacing: -0.035em;
+  text-transform: lowercase;
+}
+
+.vs-hero__btn:hover .vs-hero__btn-store {
+  animation: vs-wiggle 0.26s steps(1) infinite;
+}
+
+.vs-hero__btn-arrow {
+  flex-shrink: 0;
+  color: var(--vs-dark);
+  transform: translateX(-4px);
+  opacity: 0.45;
+  transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.25, 1.2), opacity 0.25s ease;
+}
+
+.vs-hero__btn:hover .vs-hero__btn-arrow {
+  transform: translateX(0);
+  opacity: 1;
 }
 
 @keyframes vs-wiggle {
   0% {
-    transform: rotate(-3deg);
+    transform: rotate(-2.5deg);
   }
   50% {
-    transform: rotate(3deg);
+    transform: rotate(2.5deg);
   }
   100% {
-    transform: rotate(-3deg);
+    transform: rotate(-2.5deg);
   }
 }
 
@@ -434,30 +655,33 @@
   font-family: 'DM Sans', sans-serif;
   font-size: 13px;
   font-weight: 500;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
   color: rgba(255, 255, 255, 0.62);
 }
 
 /* bottom gradient fade inside the panel, like the reference hero */
 .vs-hero__fade {
   position: absolute;
-  left: clamp(10px, 1.4vw, 18px);
-  right: clamp(10px, 1.4vw, 18px);
-  bottom: 0;
-  height: 140px;
-  border-radius: 0 0 var(--vs-radius-panel) var(--vs-radius-panel);
+  inset: 0;
+  z-index: 2;
   background: linear-gradient(
-    to top,
-    rgba(0, 0, 0, 0.55),
-    rgba(0, 0, 0, 0)
+    to bottom,
+    transparent 26%,
+    rgba(0, 0, 0, 0.2) 58%,
+    rgba(0, 0, 0, 0.72) 100%
   );
   pointer-events: none;
 }
 
 @media (max-width: 720px) {
+  .vs-hero {
+    width: calc(100% - 16px);
+    height: calc(100vh - 16px);
+    height: calc(100svh - 16px);
+    margin: 8px auto;
+  }
+
   .vs-hero__panel {
-    min-height: 78vh;
-    padding-top: 110px;
     border-radius: 22px;
   }
 
@@ -467,8 +691,15 @@
   }
 
   .vs-hero__sticker--smiley {
-    right: -0.35em;
-    top: -0.55em;
+    right: -0.55em;
+  }
+
+  .vs-hero__sticker--star {
+    right: -0.5em;
+  }
+
+  .vs-hero__note {
+    font-size: 12px;
   }
 }
 

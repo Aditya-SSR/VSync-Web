@@ -24,14 +24,14 @@ export default function Hero() {
       window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     if (reduced) {
-      gsap.set([lines, '.vs-hero__cta'], { yPercent: 0, opacity: 1 });
-      // Rows are clipping masks for the reveal only — never clip the stickers.
+      gsap.set(lines, { yPercent: 0, opacity: 1 });
+      gsap.set('.vs-hero__cta', { y: 0, opacity: 1 });
       gsap.set('.vs-hero__row', { overflow: 'visible' });
       return;
     }
 
-    gsap.set(lines, { yPercent: 115, opacity: 0 });
-    gsap.set('.vs-hero__cta', { y: 18, opacity: 0 });
+    gsap.set(lines, { yPercent: 118, opacity: 0 });
+    gsap.set('.vs-hero__cta', { y: 20, opacity: 0 });
 
     let played = false;
     const play = () => {
@@ -41,17 +41,17 @@ export default function Hero() {
         yPercent: 0,
         opacity: 1,
         duration: 1,
-        stagger: 0.09,
+        stagger: 0.08,
         ease: 'expo.out',
-        // Once the lines have risen, release the clip so the stickers that
-        // overhang a line can show (the star above "vit-ap", the smiley).
+        // Rows are clipping masks for the reveal only — once the lines have
+        // risen the clip is released so overhanging stickers can show.
         onComplete: () => gsap.set('.vs-hero__row', { overflow: 'visible' }),
       });
       gsap.to('.vs-hero__cta', {
         y: 0,
         opacity: 1,
         duration: 0.7,
-        delay: 0.45,
+        delay: 0.4,
         ease: 'power3.out',
       });
     };
@@ -68,92 +68,135 @@ export default function Hero() {
   return (
     <section className="vs-hero" ref={rootRef}>
       <div className="vs-hero__panel">
-        <h1 className="vs-hero__title">
-          {LINES.map((line, i) => (
-            <span className="vs-hero__row" key={line.join('-')}>
-              <span
-                className="vs-hero__row-inner"
-                ref={(el) => {
-                  linesRef.current[i] = el;
-                }}
-              >
-                {line.map((word) => {
-                  if (word === 'lightweight,') {
-                    return (
-                      <span className="vs-hero__word" key={word}>
-                        <span className="vs-hero__mark">{word}</span>
-                        <svg
-                          className="vs-hero__scribble"
-                          viewBox="0 0 300 84"
-                          fill="none"
-                          aria-hidden="true"
-                        >
-                          <path
-                            d="M148 6C86 8 26 22 12 42c-12 17 30 32 116 34 86 2 152-8 162-26 9-16-30-33-108-35"
-                            stroke="var(--vs-pink-solid)"
-                            strokeWidth="5"
-                            strokeLinecap="round"
+        <div className="vs-hero__fade" aria-hidden="true" />
+
+        <div className="vs-hero__content">
+          <h1 className="vs-hero__title">
+            {LINES.map((line, i) => (
+              <span className="vs-hero__row" key={line.join('-')}>
+                <span
+                  className="vs-hero__row-inner"
+                  ref={(el) => {
+                    linesRef.current[i] = el;
+                  }}
+                >
+                  {line.map((word) => {
+                    if (word === 'lightweight,') {
+                      return (
+                        <span className="vs-hero__word" key={word}>
+                          <span className="vs-hero__mark">{word}</span>
+                          <svg
+                            className="vs-hero__scribble"
+                            viewBox="0 0 300 84"
+                            fill="none"
+                            aria-hidden="true"
+                          >
+                            <path
+                              d="M148 6C86 8 26 22 12 42c-12 17 30 32 116 34 86 2 152-8 162-26 9-16-30-33-108-35"
+                              stroke="var(--vs-pink-solid)"
+                              strokeWidth="5"
+                              strokeLinecap="round"
+                            />
+                          </svg>
+                        </span>
+                      );
+                    }
+
+                    if (word === 'minimalistic,') {
+                      return (
+                        <span className="vs-hero__word" key={word}>
+                          {word}
+                          <img
+                            className="vs-hero__sticker vs-hero__sticker--smiley"
+                            src="/assets/deco/smiley-face.svg"
+                            alt=""
+                            aria-hidden="true"
                           />
-                        </svg>
-                      </span>
-                    );
-                  }
+                        </span>
+                      );
+                    }
 
-                  if (word === 'open-source') {
+                    if (word === 'academic') {
+                      return (
+                        <span className="vs-hero__word" key={word}>
+                          {word}
+                          <img
+                            className="vs-hero__sticker vs-hero__sticker--star"
+                            src="/assets/deco/pink-star.svg"
+                            alt=""
+                            aria-hidden="true"
+                          />
+                        </span>
+                      );
+                    }
+
                     return (
                       <span className="vs-hero__word" key={word}>
                         {word}
-                        <img
-                          className="vs-hero__sticker vs-hero__sticker--smiley"
-                          src="/assets/deco/smiley-face.svg"
-                          alt=""
-                          aria-hidden="true"
-                        />
                       </span>
                     );
-                  }
-
-                  if (word === 'VIT-AP') {
-                    return (
-                      <span className="vs-hero__word" key={word}>
-                        {word}
-                        <img
-                          className="vs-hero__sticker vs-hero__sticker--star"
-                          src="/assets/deco/pink-star.svg"
-                          alt=""
-                          aria-hidden="true"
-                        />
-                      </span>
-                    );
-                  }
-
-                  return (
-                    <span className="vs-hero__word" key={word}>
-                      {word}
-                    </span>
-                  );
-                })}
+                  })}
+                </span>
               </span>
-            </span>
-          ))}
-        </h1>
+            ))}
+          </h1>
 
-        <div className="vs-hero__cta">
-          {/* TODO: point at the real Play Store listing when it exists. */}
-          <a
-            href="#"
-            className="vs-hero__btn"
-            onClick={(e) => e.preventDefault()}
-          >
-            <span className="vs-hero__btn-text">get it on google play</span>
-          </a>
-          <span className="vs-hero__note">
-            free · no ads · no trackers · runs on your device
-          </span>
+          <div className="vs-hero__cta">
+            {/* TODO: point at the real Play Store listing once it exists. */}
+            <a
+              href="#"
+              className="vs-hero__btn"
+              onClick={(e) => e.preventDefault()}
+            >
+              <span className="vs-hero__btn-glyph" aria-hidden="true">
+                <svg viewBox="0 0 466 512" width="20" height="22">
+                  <path
+                    d="M1.4 41.86C6.98 18.14 30.7 0 57.2 0L329.27 145.1 217 256 1.4 41.86Z"
+                    fill="#34A853"
+                  />
+                  <path
+                    d="M0 57.2v397.64c0 5.57 0 9.76 1.4 15.34L217 256 1.4 41.86 0 57.2Z"
+                    fill="#4285F4"
+                  />
+                  <path
+                    d="M1.4 470.14 217 256l113.6 110.9-242.7 136.73C68.36 511.98 30.7 511.98 1.4 470.14Z"
+                    fill="#EA4335"
+                  />
+                  <path
+                    d="M329.27 145.1 217 256l113.6 110.9L434 288.4c22.9-12.4 22.9-52.4 0-64.8L329.27 145.1Z"
+                    fill="#FBBC04"
+                  />
+                </svg>
+              </span>
+
+              <span className="vs-hero__btn-copy">
+                <span className="vs-hero__btn-kicker">get it on</span>
+                <span className="vs-hero__btn-store">google play</span>
+              </span>
+
+              <svg
+                className="vs-hero__btn-arrow"
+                viewBox="0 0 24 24"
+                width="15"
+                height="15"
+                aria-hidden="true"
+              >
+                <path
+                  d="M5 12h13m0 0-5.2-5.2M18 12l-5.2 5.2"
+                  stroke="currentColor"
+                  strokeWidth="2.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </a>
+
+            <span className="vs-hero__note">
+              free · no ads · no trackers · runs on your device
+            </span>
+          </div>
         </div>
       </div>
-
-      <div className="vs-hero__fade" aria-hidden="true" />
     </section>
   );
 }

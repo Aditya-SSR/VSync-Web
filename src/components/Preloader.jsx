@@ -48,20 +48,20 @@ export default function Preloader() {
       .from(letters, {
         yPercent: 120,
         opacity: 0,
-        duration: 0.75,
-        stagger: 0.07,
+        duration: 0.6,
+        stagger: 0.055,
       })
       .fromTo(
         lineRef.current,
         { strokeDashoffset: 1 },
-        { strokeDashoffset: 0, duration: 0.7, ease: 'power2.inOut' },
-        '-=0.35'
+        { strokeDashoffset: 0, duration: 0.55, ease: 'power2.inOut' },
+        '-=0.28'
       )
       .to(
         counter,
         {
           value: 100,
-          duration: 1.1,
+          duration: 0.9,
           ease: 'power1.inOut',
           onUpdate: () => {
             if (countRef.current) {
@@ -76,19 +76,26 @@ export default function Preloader() {
             }
           },
         },
-        '-=0.6'
+        '-=0.45'
       )
-      .to(letters, {
-        yPercent: -130,
-        opacity: 0,
-        duration: 0.5,
-        stagger: 0.04,
-        ease: 'power3.in',
-      })
+      .to(
+        letters,
+        {
+          yPercent: -130,
+          opacity: 0,
+          duration: 0.42,
+          stagger: 0.03,
+          ease: 'power3.in',
+        },
+        '-=0.1'
+      )
+      // Hand the page over *as* the panel lifts, so the hero reveal plays
+      // underneath it instead of starting on an empty screen.
+      .call(finish, [], '-=0.1')
       .to(
         root,
-        { yPercent: -100, duration: 0.85, ease: 'expo.inOut' },
-        '-=0.15'
+        { yPercent: -100, duration: 0.75, ease: 'expo.inOut' },
+        '-=0.12'
       )
       .set(root, { autoAlpha: 0 });
 
@@ -98,7 +105,7 @@ export default function Preloader() {
         gsap.set(root, { autoAlpha: 0 });
         finish();
       }
-    }, 6000);
+    }, 5000);
 
     return () => {
       window.clearTimeout(guard);

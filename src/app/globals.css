@@ -61,10 +61,24 @@ body::-webkit-scrollbar {
   display: none;
 }
 
-/* scroll is locked until the preloader lifts */
+/* scroll is locked until the preloader lifts.
+   No `height` here — forcing body to 100vh resets the scroll position and
+   fights Lenis. */
 body.vs-locked {
   overflow: hidden;
-  height: 100vh;
+  touch-action: none;
+}
+
+.vs-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }
 
 ::selection {
